@@ -54,7 +54,7 @@ class UserControllerTest {
         testUser.setName("updateName");
         userController.update(testUser);
         Assertions.assertTrue(userController.getUsers().containsValue(testUser));
-        Assertions.assertEquals(userController.getUsers().get(testUser.getId()).getName(),"updateName");
+        Assertions.assertEquals(userController.getUsers().get(testUser.getId()).getName(), "updateName");
     }
 
     @Test
@@ -75,6 +75,18 @@ class UserControllerTest {
             userController.create(user);
         });
         Assertions.assertEquals(HttpStatus.BAD_REQUEST, thrown.getStatus());
+    }
+
+    @Test
+    void updateUserIncorrectId() {
+        final ValidationException thrown = assertThrows(ValidationException.class, () -> {
+            userController.create(user);
+            user = new User("mail@mail.ru", "dolore", LocalDate.of(1946, 8, 20));
+            user.setName("Nick Name");
+            user.setId(-1);
+            userController.update(user);
+        });
+        Assertions.assertEquals(HttpStatus.INTERNAL_SERVER_ERROR, thrown.getStatus());
     }
 
     @Test
