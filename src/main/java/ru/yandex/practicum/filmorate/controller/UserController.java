@@ -1,10 +1,10 @@
 package ru.yandex.practicum.filmorate.controller;
 
+import lombok.Getter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.server.ResponseStatusException;
 import ru.yandex.practicum.filmorate.exeption.ValidationException;
 import ru.yandex.practicum.filmorate.model.User;
 
@@ -20,6 +20,7 @@ public class UserController {
 
     private int id = 0;
     private static final Logger log = LoggerFactory.getLogger(UserController.class);
+    @Getter
     private final HashMap<Integer, User> users = new HashMap();
 
     @GetMapping
@@ -34,41 +35,35 @@ public class UserController {
 
     @PostMapping
     public User create(@Valid @RequestBody User user) {
-        try {
-            checkAndPut(user);
-            id++;
-            user.setId(id);
-            users.put(user.getId(), user);
-            log.debug("Сохранен пользователь: {}", user);
-        } catch (ValidationException e) {
-            log.warn("Произошла ошибка: {}", e.getMessage());
-            throw new ResponseStatusException(
-                    HttpStatus.BAD_REQUEST, e.getMessage());
-        }
+        checkAndPut(user);
+        id++;
+        user.setId(id);
+        users.put(user.getId(), user);
+        log.debug("Сохранен пользователь: {}", user);
         return user;
     }
 
     @PutMapping
     public User update(@Valid @RequestBody User user) {
-        try {
-            if ((user.getId() > id) || (user.getId() <= 0)) {
-                throw new ValidationException("Пользователя с таким ID (" + user.getId() + ") не зарегистрированно!"
-                        + id);
-            }
-            checkAndPut(user);
-            users.put(user.getId(), user);
-            log.debug("Данные пользователя {} обновлены!", user);
-        } catch (ValidationException e) {
-            log.warn("Произошла ошибка: {}", e.getMessage());
-            throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, e.getMessage());
-            // проверка в Postman идет по коду 500 при обновлении пользователя
+        if ((user.getId() > id) || (user.getId() <= 0)) {
+            log.warn("Пользователя с таким ID ( {} ) не зарегистрировано!", user.getId());
+            throw new ValidationException(HttpStatus.INTERNAL_SERVER_ERROR, "Пользователя с таким ID (" + user.getId() + ")" +
+                    " не зарегистрировано!");
         }
+        checkAndPut(user);
+        users.put(user.getId(), user);
+        log.debug("Данные пользователя {} обновлены!", user);
         return user;
     }
 
     public void checkAndPut(User user) {
+        if (user.getLogin().isEmpty() || (user.getLogin().contains(" "))) {
+            log.warn("Ошибка написания логина!");
+            throw new ValidationException(HttpStatus.BAD_REQUEST, "Ошибка написания логина!");
+        }
         if (user.getBirthday().isAfter(LocalDate.now())) {
-            throw new ValidationException("Дата дня рождения не наступила!");
+            log.warn("Дата дня рождения не наступила!");
+            throw new ValidationException(HttpStatus.BAD_REQUEST, "Дата дня рождения не наступила!");
         }
         if (user.getName().isEmpty()) {
             user.setName(user.getLogin());
