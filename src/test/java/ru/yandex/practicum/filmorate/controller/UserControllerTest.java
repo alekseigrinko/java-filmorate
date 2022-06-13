@@ -3,10 +3,11 @@ package ru.yandex.practicum.filmorate.controller;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.springframework.http.HttpStatus;
+import ru.yandex.practicum.filmorate.exeption.ObjectNotFoundException;
 import ru.yandex.practicum.filmorate.exeption.ValidationException;
-import ru.yandex.practicum.filmorate.model.Film;
 import ru.yandex.practicum.filmorate.model.User;
+import ru.yandex.practicum.filmorate.service.UserService;
+import ru.yandex.practicum.filmorate.storage.user.InMemoryUserStorage;
 
 import javax.validation.ConstraintViolation;
 import javax.validation.Validation;
@@ -22,19 +23,22 @@ class UserControllerTest {
 
     private static User user;
     private static UserController userController;
+    private InMemoryUserStorage inMemoryUserStorage = new InMemoryUserStorage();
+    private UserService userService = new UserService (inMemoryUserStorage);
+
 
     @BeforeEach
     public void SetUp() {
         user = new User("mail@mail.ru", "dolore", LocalDate.of(1946, 8, 20));
         user.setName("Nick Name");
-        userController = new UserController();
+        userController = new UserController(inMemoryUserStorage, userService);
     }
 
     @Test
     void addUser() {
         User testUser = userController.create(user);
         user.setId(testUser.getId());
-        Assertions.assertTrue(userController.getUsers().containsValue(user));
+        Assertions.assertTrue(userController.getInMemoryUserStorage().getUsers().containsValue(user));
         Assertions.assertEquals(user, testUser);
     }
 
@@ -43,9 +47,9 @@ class UserControllerTest {
         user = new User("mail@mail.ru", "dolore", LocalDate.of(1946, 8, 20));
         user.setName("");
         User testUser = userController.create(user);
-        Assertions.assertTrue(userController.getUsers().containsValue(testUser));
-        Assertions.assertEquals(userController.getUsers().get(testUser.getId()).getName(),
-                userController.getUsers().get(testUser.getId()).getLogin());
+        Assertions.assertTrue(userController.getInMemoryUserStorage().getUsers().containsValue(testUser));
+        Assertions.assertEquals(userController.getInMemoryUserStorage().getUsers().get(testUser.getId()).getName(),
+                userController.getInMemoryUserStorage().getUsers().get(testUser.getId()).getLogin());
     }
 
     @Test
@@ -53,8 +57,9 @@ class UserControllerTest {
         User testUser = userController.create(user);
         testUser.setName("updateName");
         userController.update(testUser);
-        Assertions.assertTrue(userController.getUsers().containsValue(testUser));
-        Assertions.assertEquals(userController.getUsers().get(testUser.getId()).getName(), "updateName");
+        Assertions.assertTrue(userController.getInMemoryUserStorage().getUsers().containsValue(testUser));
+        Assertions.assertEquals(userController.getInMemoryUserStorage().getUsers().get(testUser.getId()).getName()
+                , "updateName");
     }
 
     @Test
@@ -64,7 +69,7 @@ class UserControllerTest {
             user.setName("Nick Name");
             userController.create(user);
         });
-        Assertions.assertEquals(HttpStatus.BAD_REQUEST, thrown.getStatus());
+        Assertions.assertEquals("Дата дня рождения не наступила!", thrown.getMessage());
     }
 
     @Test
@@ -74,19 +79,20 @@ class UserControllerTest {
             user.setName("Nick Name");
             userController.create(user);
         });
-        Assertions.assertEquals(HttpStatus.BAD_REQUEST, thrown.getStatus());
+        Assertions.assertEquals("Ошибка написания логина!", thrown.getMessage());
     }
 
     @Test
     void updateUserIncorrectId() {
-        final ValidationException thrown = assertThrows(ValidationException.class, () -> {
+        final ObjectNotFoundException thrown = assertThrows(ObjectNotFoundException.class, () -> {
             userController.create(user);
             user = new User("mail@mail.ru", "dolore", LocalDate.of(1946, 8, 20));
             user.setName("Nick Name");
             user.setId(-1);
             userController.update(user);
         });
-        Assertions.assertEquals(HttpStatus.INTERNAL_SERVER_ERROR, thrown.getStatus());
+        Assertions.assertEquals("Пользователя с таким ID (" + user.getId() + ")" +
+                " не зарегистрировано!", thrown.getMessage());
     }
 
     @Test
@@ -104,7 +110,7 @@ class UserControllerTest {
     void findAll() {
         userController.create(user);
         List<User> testList = userController.findAll();
-        Assertions.assertEquals(1, userController.getUsers().size());
-        Assertions.assertEquals(testList.get(0), userController.getUsers().get(user.getId()));
+        Assertions.assertEquals(1, userController.getInMemoryUserStorage().getUsers().size());
+        Assertions.assertEquals(testList.get(0), userController.getInMemoryUserStorage().getUsers().get(user.getId()));
     }
 }

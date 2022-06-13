@@ -6,6 +6,8 @@ import org.junit.jupiter.api.Test;
 import org.springframework.http.HttpStatus;
 import ru.yandex.practicum.filmorate.exeption.ValidationException;
 import ru.yandex.practicum.filmorate.model.Film;
+import ru.yandex.practicum.filmorate.service.FilmService;
+import ru.yandex.practicum.filmorate.storage.film.InMemoryFilmStorage;
 
 import javax.validation.ConstraintViolation;
 import javax.validation.Validation;
@@ -21,19 +23,22 @@ class FilmControllerTest {
 
     private static Film film;
     private static FilmController filmController;
+    private InMemoryFilmStorage inMemoryFilmStorage = new InMemoryFilmStorage();
+    private FilmService filmService = new FilmService(inMemoryFilmStorage);
+
 
     @BeforeEach
     public void SetUp() {
         film = new Film("nisi eiusmod", "adipisicing", LocalDate.of(1967, 03, 25)
                 ,  100);
-        filmController = new FilmController();
+        filmController = new FilmController(inMemoryFilmStorage, filmService);
     }
 
     @Test
     void addFilm() {
         Film testFilm = filmController.create(film);
         film.setId(testFilm.getId());
-        Assertions.assertTrue(filmController.getFilms().containsValue(film));
+        Assertions.assertTrue(filmController.getInMemoryFilmStorage().getFilms().containsValue(film));
         Assertions.assertEquals(film, testFilm);
     }
 
@@ -44,8 +49,9 @@ class FilmControllerTest {
                 ,  100);
         film.setId(testFilm.getId());
         filmController.update(film);
-        Assertions.assertTrue(filmController.getFilms().containsValue(film));
-        Assertions.assertEquals(filmController.getFilms().get(film.getId()).getName(),"domsuie isin");
+        Assertions.assertTrue(filmController.getInMemoryFilmStorage().getFilms().containsValue(film));
+        Assertions.assertEquals(filmController.getInMemoryFilmStorage().getFilms().get(film.getId()).getName()
+                ,"domsuie isin");
     }
 
     @Test
@@ -57,7 +63,7 @@ class FilmControllerTest {
                     , 25), 100);
             filmController.create(film);
         });
-        Assertions.assertEquals(HttpStatus.BAD_REQUEST, thrown.getStatus());
+        Assertions.assertEquals("Размер описания фильма превышает 200 символов!", thrown.getMessage());
     }
 
     @Test
@@ -67,7 +73,7 @@ class FilmControllerTest {
                     , 27) , 100);
             filmController.create(film);
         });
-        Assertions.assertEquals(HttpStatus.BAD_REQUEST, thrown.getStatus());
+        Assertions.assertEquals("Некорректная дата релиза!", thrown.getMessage());
     }
 
     @Test
@@ -77,7 +83,7 @@ class FilmControllerTest {
                     25), -1);
             filmController.create(film);
         });
-        Assertions.assertEquals(HttpStatus.BAD_REQUEST, thrown.getStatus());
+        Assertions.assertEquals("Продолжительность фильма не может быть меньше 0", thrown.getMessage());
     }
 
     @Test
@@ -100,14 +106,14 @@ class FilmControllerTest {
             film.setId(-1);
             filmController.update(film);
         });
-        Assertions.assertEquals(HttpStatus.INTERNAL_SERVER_ERROR, thrown.getStatus());
+        Assertions.assertEquals("Фильма с таким ID (" + film.getId() + ")не зарегистрировано!", thrown.getMessage());
     }
 
     @Test
     void findAll() {
         filmController.create(film);
         List<Film> testList = filmController.findAll();
-        Assertions.assertEquals(1, filmController.getFilms().size());
-        Assertions.assertEquals(testList.get(0), filmController.getFilms().get(film.getId()));
+        Assertions.assertEquals(1, filmController.getInMemoryFilmStorage().getFilms().size());
+        Assertions.assertEquals(testList.get(0), filmController.getInMemoryFilmStorage().getFilms().get(film.getId()));
     }
 }

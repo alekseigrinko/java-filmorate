@@ -1,72 +1,69 @@
 package ru.yandex.practicum.filmorate.controller;
 
 import lombok.Getter;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.http.HttpStatus;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
-import ru.yandex.practicum.filmorate.exeption.ValidationException;
 import ru.yandex.practicum.filmorate.model.User;
+import ru.yandex.practicum.filmorate.service.UserService;
+import ru.yandex.practicum.filmorate.storage.user.InMemoryUserStorage;
 
 import javax.validation.Valid;
-import java.time.LocalDate;
-import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
+import java.util.Set;
 
 @RestController
 @RequestMapping("/users")
 public class UserController {
 
-    private int id = 0;
-    private static final Logger log = LoggerFactory.getLogger(UserController.class);
     @Getter
-    private final HashMap<Integer, User> users = new HashMap();
+    private InMemoryUserStorage inMemoryUserStorage;
+
+    @Getter
+    private UserService userService;
+
+    @Autowired
+    public UserController(InMemoryUserStorage inMemoryUserStorage, UserService userService) {
+        this.inMemoryUserStorage = inMemoryUserStorage;
+        this.userService = userService;
+    }
 
     @GetMapping
     public List<User> findAll() {
-        List<User> usersList = new ArrayList<>();
-        for (User user : users.values()) {
-            usersList.add(user);
-        }
-        log.debug("Текущее количество пользователей: {}", usersList.size());
-        return usersList;
+        return inMemoryUserStorage.findAll();
     }
 
     @PostMapping
     public User create(@Valid @RequestBody User user) {
-        checkAndPut(user);
-        id++;
-        user.setId(id);
-        users.put(user.getId(), user);
-        log.debug("Сохранен пользователь: {}", user);
-        return user;
+        return inMemoryUserStorage.create(user);
     }
 
     @PutMapping
     public User update(@Valid @RequestBody User user) {
-        if ((user.getId() > id) || (user.getId() <= 0)) {
-            log.warn("Пользователя с таким ID ( {} ) не зарегистрировано!", user.getId());
-            throw new ValidationException(HttpStatus.INTERNAL_SERVER_ERROR, "Пользователя с таким ID (" + user.getId() + ")" +
-                    " не зарегистрировано!");
-        }
-        checkAndPut(user);
-        users.put(user.getId(), user);
-        log.debug("Данные пользователя {} обновлены!", user);
-        return user;
+        return inMemoryUserStorage.update(user);
     }
 
-    public void checkAndPut(User user) {
-        if (user.getLogin().isEmpty() || (user.getLogin().contains(" "))) {
-            log.warn("Ошибка написания логина!");
-            throw new ValidationException(HttpStatus.BAD_REQUEST, "Ошибка написания логина!");
-        }
-        if (user.getBirthday().isAfter(LocalDate.now())) {
-            log.warn("Дата дня рождения не наступила!");
-            throw new ValidationException(HttpStatus.BAD_REQUEST, "Дата дня рождения не наступила!");
-        }
-        if (user.getName().isEmpty()) {
-            user.setName(user.getLogin());
-        }
+    @GetMapping("/users/{id}")
+    public User getFilm(@PathVariable("id") int id){
+        return userService.getUser(id);
+    }
+
+    @PutMapping("/users/{id}/friends/{friendId}")
+    public String putFriend(@PathVariable("id") int id, @PathVariable("friendId") int friendId){
+        return userService.putFriend(id, friendId);
+    }
+
+    @DeleteMapping("/users/{id}/friends/{friendId}")
+    public String deleteFriend(@PathVariable("id") int id, @PathVariable("friendId") int friendId){
+        return userService.deleteFriend(id, friendId);
+    }
+
+    @PutMapping("/users/{id}/friends")
+    public Set<Integer> findFriends(@PathVariable("id") int id){
+        return userService.findFriends(id);
+    }
+
+    @PutMapping("/users/{id}/friends/common/{otherId}")
+    public Set<Integer> findAllFriends(@PathVariable("id") int id, @PathVariable("otherId") int otherId){
+        return userService.findAllFriends(id, otherId);
     }
 }
