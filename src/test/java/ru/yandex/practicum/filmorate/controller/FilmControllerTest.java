@@ -4,6 +4,7 @@ import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.http.HttpStatus;
+import ru.yandex.practicum.filmorate.exeption.ObjectNotFoundException;
 import ru.yandex.practicum.filmorate.exeption.ValidationException;
 import ru.yandex.practicum.filmorate.model.Film;
 import ru.yandex.practicum.filmorate.service.FilmService;
@@ -31,14 +32,14 @@ class FilmControllerTest {
     public void SetUp() {
         film = new Film("nisi eiusmod", "adipisicing", LocalDate.of(1967, 03, 25)
                 ,  100);
-        filmController = new FilmController(inMemoryFilmStorage, filmService);
+        filmController = new FilmController(filmService);
     }
 
     @Test
     void addFilm() {
         Film testFilm = filmController.create(film);
         film.setId(testFilm.getId());
-        Assertions.assertTrue(filmController.getInMemoryFilmStorage().getFilms().containsValue(film));
+        Assertions.assertTrue(filmController.getFilmService().getInMemoryFilmStorage().getFilms().containsValue(film));
         Assertions.assertEquals(film, testFilm);
     }
 
@@ -49,8 +50,8 @@ class FilmControllerTest {
                 ,  100);
         film.setId(testFilm.getId());
         filmController.update(film);
-        Assertions.assertTrue(filmController.getInMemoryFilmStorage().getFilms().containsValue(film));
-        Assertions.assertEquals(filmController.getInMemoryFilmStorage().getFilms().get(film.getId()).getName()
+        Assertions.assertTrue(filmController.getFilmService().getInMemoryFilmStorage().getFilms().containsValue(film));
+        Assertions.assertEquals(filmController.getFilmService().getInMemoryFilmStorage().getFilms().get(film.getId()).getName()
                 ,"domsuie isin");
     }
 
@@ -99,7 +100,7 @@ class FilmControllerTest {
 
     @Test
     void updateFilmIncorrectId() {
-        final ValidationException thrown = assertThrows(ValidationException.class, () -> {
+        final ObjectNotFoundException thrown = assertThrows(ObjectNotFoundException.class, () -> {
             filmController.create(film);
             film = new Film("domsuie isin", "gnicisipida", LocalDate.of(1967, 03, 25)
                     ,  100);
@@ -113,7 +114,7 @@ class FilmControllerTest {
     void findAll() {
         filmController.create(film);
         List<Film> testList = filmController.findAll();
-        Assertions.assertEquals(1, filmController.getInMemoryFilmStorage().getFilms().size());
-        Assertions.assertEquals(testList.get(0), filmController.getInMemoryFilmStorage().getFilms().get(film.getId()));
+        Assertions.assertEquals(1, filmController.getFilmService().getInMemoryFilmStorage().getFilms().size());
+        Assertions.assertEquals(testList.get(0), filmController.getFilmService().getInMemoryFilmStorage().getFilms().get(film.getId()));
     }
 }

@@ -1,5 +1,6 @@
 package ru.yandex.practicum.filmorate.service;
 
+import lombok.Getter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -14,6 +15,8 @@ import java.util.stream.Collectors;
 
 @Service
 public class FilmService {
+
+    @Getter
     InMemoryFilmStorage inMemoryFilmStorage;
     private final static Logger log = LoggerFactory.getLogger(FilmService.class);
 
@@ -48,7 +51,7 @@ public class FilmService {
     }
 
     private void checkFilm(int id) {
-        if ((inMemoryFilmStorage.getId() > id) || (inMemoryFilmStorage.getId() <= 0)) {
+        if ((inMemoryFilmStorage.getId() < id) || (id <= 0)) {
             log.warn("Фильма с таким ID ( {} )не зарегистрировано!", id);
             throw new ObjectNotFoundException("Фильм с таким ID (" + id
                     + ")не зарегистрировано!");
@@ -67,7 +70,7 @@ public class FilmService {
     }
 
     private int compare(Film f0, Film f1) {
-        int result = f0.getLikes().size() - f1.getLikes().size();
+        int result = f1.getLikes().size() - f0.getLikes().size();
         return result;
     }
 }

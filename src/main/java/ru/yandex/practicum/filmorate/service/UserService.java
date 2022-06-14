@@ -1,5 +1,6 @@
 package ru.yandex.practicum.filmorate.service;
 
+import lombok.Getter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -8,12 +9,16 @@ import ru.yandex.practicum.filmorate.exeption.ObjectNotFoundException;
 import ru.yandex.practicum.filmorate.model.User;
 import ru.yandex.practicum.filmorate.storage.user.InMemoryUserStorage;
 
+import java.util.ArrayList;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
+
 
 @Service
 public class UserService {
 
+    @Getter
     InMemoryUserStorage inMemoryUserStorage;
     private static final Logger log = LoggerFactory.getLogger(UserService.class);
 
@@ -30,45 +35,66 @@ public class UserService {
     public String putFriend(int id, int friendId) {
         checkUser(id);
         checkUser(friendId);
+        if (inMemoryUserStorage.getUsers().get(id).getFriends().contains(friendId)) {
+            return ("Пользователь ID:" + friendId + " уже является другом");
+        }
         inMemoryUserStorage.getUsers().get(id).getFriends().add(friendId);
+        inMemoryUserStorage.getUsers().get(friendId).getFriends().add(id);
         return ("Добавлен пользователю " +  inMemoryUserStorage.getUsers().get(id).getName()
                 + " новый друг с ID:" + friendId);
     }
 
-    public String deleteFriend(int id, int friendId) {
+    public String deleteFriend(Integer id, Integer friendId) {
         checkUser(id);
         checkUser(friendId);
         if (!inMemoryUserStorage.getUsers().get(id).getFriends().contains(friendId)) {
             throw new ObjectNotFoundException("Пользователь с ID: " + friendId + " не был другом "
                     + inMemoryUserStorage.getUsers().get(id).getName());
         }
-        inMemoryUserStorage.getUsers().get(id).getFriends().remove(friendId);
+        for (int i = 0; i < inMemoryUserStorage.getUsers().get(id).getFriends().size(); i++) {
+            if (inMemoryUserStorage.getUsers().get(id).getFriends().get(i) == friendId) {
+                inMemoryUserStorage.getUsers().get(id).getFriends().remove(i);
+            }
+        }
+        for (int i = 0; i < inMemoryUserStorage.getUsers().get(friendId).getFriends().size(); i++) {
+            if (inMemoryUserStorage.getUsers().get(friendId).getFriends().get(i) == id) {
+                inMemoryUserStorage.getUsers().get(friendId).getFriends().remove(i);
+            }
+        }
         return ("Пользователь " +  inMemoryUserStorage.getUsers().get(id).getName()
                 + " больше не дружит с ID:" + friendId);
     }
 
     private void checkUser(int id) {
-        if ((inMemoryUserStorage.getId() > id) || (inMemoryUserStorage.getId() <= 0)) {
+        if ((inMemoryUserStorage.getId() < id) || (id <= 0)) {
             log.warn("Пользователя с таким ID ( {} )не зарегистрировано!", id);
             throw new ObjectNotFoundException("Пользователя с таким ID (" + id
                     + ")не зарегистрировано!");
         }
     }
 
-    public Set<Integer> findFriends(int id){
+    public List<User> findFriends(int id){
         checkUser(id);
-        return inMemoryUserStorage.getUsers().get(id).getFriends();
+        List<User> friends = new ArrayList<>();
+        for (int i : inMemoryUserStorage.getUsers().get(id).getFriends()) {
+            friends.add(inMemoryUserStorage.getUsers().get(i));
+        }
+        return friends;
     }
 
-    public Set<Integer> findAllFriends(int id, int friendId) {
+    public List<User> findAllFriends(int id, int friendId) {
         checkUser(id);
         checkUser(friendId);
-        Set<Integer> commonFriends = new HashSet<>();
+        List<Integer> commonFriends = new ArrayList<>();
         for (int check : inMemoryUserStorage.getUsers().get(id).getFriends()) {
             if (inMemoryUserStorage.getUsers().get(friendId).getFriends().contains(check)) {
                 commonFriends.add(check);
             }
         }
-        return commonFriends;
+        List<User> friends = new ArrayList<>();
+        for (int i : commonFriends) {
+            friends.add(inMemoryUserStorage.getUsers().get(i));
+        }
+        return friends;
     }
 }
