@@ -27,6 +27,7 @@ public class FilmService {
 
     public Film getFilm(int id) {
         checkFilm(id);
+        log.debug("Предоставлена информация по фильму {}", inMemoryFilmStorage.getFilms().get(id));
         return inMemoryFilmStorage.getFilms().get(id);
     }
 
@@ -34,6 +35,8 @@ public class FilmService {
         checkFilm(id);
         checkFilm(userId);
         inMemoryFilmStorage.getFilms().get(id).getLikes().add(userId);
+        log.debug("Фильму " +  inMemoryFilmStorage.getFilms().get(id).getName()
+                + " поставил лайк пользователь с ID:" + userId);
         return ("Фильму " +  inMemoryFilmStorage.getFilms().get(id).getName()
                 + " поставил лайк пользователь с ID:" + userId);
     }
@@ -42,10 +45,14 @@ public class FilmService {
         checkFilm(id);
         checkFilm(userId);
         if (!inMemoryFilmStorage.getFilms().get(id).getLikes().contains(userId)) {
+            log.warn("Пользователь с ID: " + userId + "еще не ставил лайк фильму "
+                    + inMemoryFilmStorage.getFilms().get(id).getName());
             throw new ObjectNotFoundException("Пользователь с ID: " + userId + "еще не ставил лайк фильму "
                     + inMemoryFilmStorage.getFilms().get(id).getName());
         }
         inMemoryFilmStorage.getFilms().get(id).getLikes().remove(userId);
+        log.debug("Пользователю ID: " + userId + " больше не нравится фильм "
+                + inMemoryFilmStorage.getFilms().get(id).getName());
         return ("Пользователю ID: " + userId + " больше не нравится фильм "
                 + inMemoryFilmStorage.getFilms().get(id).getName());
     }
@@ -63,6 +70,7 @@ public class FilmService {
         for (Film film : inMemoryFilmStorage.getFilms().values()) {
             checkList.add(film);
         }
+        log.debug("Предоставлен список " + count + " самых популярных фильмов");
         return checkList.stream()
                 .sorted((f0, f1) -> compare(f0, f1))
                 .limit(count)
