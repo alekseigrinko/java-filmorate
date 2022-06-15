@@ -17,9 +17,9 @@ import java.util.List;
 public class InMemoryUserStorage implements UserStorage{
 
     @Getter
-    private int id = 0;
+    private long id = 0;
     @Getter
-    private final HashMap<Integer, User> users = new HashMap();
+    private final HashMap<Long, User> users = new HashMap();
     private static final Logger log = LoggerFactory.getLogger(InMemoryUserStorage.class);
 
     @Override

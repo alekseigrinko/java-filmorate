@@ -1,6 +1,6 @@
 package ru.yandex.practicum.filmorate.model;
 
-import lombok.Data;
+import lombok.*;
 
 import javax.validation.constraints.Email;
 import javax.validation.constraints.NotBlank;
@@ -10,14 +10,17 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-@Data
+@Getter
+@Setter
+@EqualsAndHashCode
+@RequiredArgsConstructor
 public class User {
-    private int id;
+    private long id;
     @Email
     private final String email;
     @NotBlank
     private final String login;
     private String name;
     private final LocalDate birthday;
-    private List<Integer> friends = new ArrayList<>();
+    private List<Long> friends = new ArrayList<>();
 }

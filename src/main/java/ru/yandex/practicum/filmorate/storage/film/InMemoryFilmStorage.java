@@ -17,10 +17,10 @@ import java.util.List;
 public class InMemoryFilmStorage implements FilmStorage {
 
     @Getter
-    private int id = 0;
+    private long id = 0;
     private final static Logger log = LoggerFactory.getLogger(InMemoryFilmStorage.class);
     @Getter
-    private final HashMap<Integer, Film> films = new HashMap<>();
+    private final HashMap<Long, Film> films = new HashMap<>();
 
     @Override
     public List<Film> findAll() {

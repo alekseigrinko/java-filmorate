@@ -25,13 +25,13 @@ public class UserService {
         this.inMemoryUserStorage = inMemoryUserStorage;
     }
 
-    public User getUser(int id) {
+    public User getUser(long id) {
         checkUser(id);
         log.debug("Предоставлена информация по пользователю {}", inMemoryUserStorage.getUsers().get(id));
         return inMemoryUserStorage.getUsers().get(id);
     }
 
-    public String putFriend(int id, int friendId) {
+    public String putFriend(long id, long friendId) {
         checkUser(id);
         checkUser(friendId);
         if (inMemoryUserStorage.getUsers().get(id).getFriends().contains(friendId)) {
@@ -46,7 +46,7 @@ public class UserService {
                 + " новый друг с ID:" + friendId);
     }
 
-    public String deleteFriend(Integer id, Integer friendId) {
+    public String deleteFriend(long id, long friendId) {
         checkUser(id);
         checkUser(friendId);
         if (!inMemoryUserStorage.getUsers().get(id).getFriends().contains(friendId)) {
@@ -71,7 +71,7 @@ public class UserService {
                 + " больше не дружит с ID:" + friendId);
     }
 
-    private void checkUser(int id) {
+    private void checkUser(long id) {
         if ((inMemoryUserStorage.getId() < id) || (id <= 0)) {
             log.warn("Пользователя с таким ID ( {} )не зарегистрировано!", id);
             throw new ObjectNotFoundException("Пользователя с таким ID (" + id
@@ -79,27 +79,27 @@ public class UserService {
         }
     }
 
-    public List<User> findFriends(int id){
+    public List<User> findFriends(long id){
         checkUser(id);
         List<User> friends = new ArrayList<>();
-        for (int i : inMemoryUserStorage.getUsers().get(id).getFriends()) {
+        for (long i : inMemoryUserStorage.getUsers().get(id).getFriends()) {
             friends.add(inMemoryUserStorage.getUsers().get(i));
         }
         log.debug("Предоставлен список друзей пользователя {}", inMemoryUserStorage.getUsers().get(id));
         return friends;
     }
 
-    public List<User> findAllFriends(int id, int friendId) {
+    public List<User> findAllFriends(long id, long friendId) {
         checkUser(id);
         checkUser(friendId);
-        List<Integer> commonFriends = new ArrayList<>();
-        for (int check : inMemoryUserStorage.getUsers().get(id).getFriends()) {
+        List<Long> commonFriends = new ArrayList<>();
+        for (long check : inMemoryUserStorage.getUsers().get(id).getFriends()) {
             if (inMemoryUserStorage.getUsers().get(friendId).getFriends().contains(check)) {
                 commonFriends.add(check);
             }
         }
         List<User> friends = new ArrayList<>();
-        for (int i : commonFriends) {
+        for (long i : commonFriends) {
             friends.add(inMemoryUserStorage.getUsers().get(i));
         }
         log.debug("Предоставлен общий список друзей пользователя " + inMemoryUserStorage.getUsers().get(id)

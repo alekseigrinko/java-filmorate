@@ -25,13 +25,13 @@ public class FilmService {
         this.inMemoryFilmStorage = inMemoryFilmStorage;
     }
 
-    public Film getFilm(int id) {
+    public Film getFilm(long id) {
         checkFilm(id);
         log.debug("Предоставлена информация по фильму {}", inMemoryFilmStorage.getFilms().get(id));
         return inMemoryFilmStorage.getFilms().get(id);
     }
 
-    public String putLike(int id, int userId) {
+    public String putLike(long id, long userId) {
         checkFilm(id);
         checkFilm(userId);
         inMemoryFilmStorage.getFilms().get(id).getLikes().add(userId);
@@ -41,7 +41,7 @@ public class FilmService {
                 + " поставил лайк пользователь с ID:" + userId);
     }
 
-    public String deleteLike(int id, int userId) {
+    public String deleteLike(long id, long userId) {
         checkFilm(id);
         checkFilm(userId);
         if (!inMemoryFilmStorage.getFilms().get(id).getLikes().contains(userId)) {
@@ -57,7 +57,7 @@ public class FilmService {
                 + inMemoryFilmStorage.getFilms().get(id).getName());
     }
 
-    private void checkFilm(int id) {
+    private void checkFilm(long id) {
         if ((inMemoryFilmStorage.getId() < id) || (id <= 0)) {
             log.warn("Фильма с таким ID ( {} )не зарегистрировано!", id);
             throw new ObjectNotFoundException("Фильм с таким ID (" + id
@@ -65,7 +65,7 @@ public class FilmService {
         }
     }
 
-    public List<Film> getPopularFilms(int count) {
+    public List<Film> getPopularFilms(long count) {
         List<Film> checkList = new ArrayList<>();
         for (Film film : inMemoryFilmStorage.getFilms().values()) {
             checkList.add(film);
