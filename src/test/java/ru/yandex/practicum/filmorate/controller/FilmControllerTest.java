@@ -3,11 +3,9 @@ package ru.yandex.practicum.filmorate.controller;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.springframework.http.HttpStatus;
 import ru.yandex.practicum.filmorate.exeption.ObjectNotFoundException;
 import ru.yandex.practicum.filmorate.exeption.ValidationException;
 import ru.yandex.practicum.filmorate.model.Film;
-import ru.yandex.practicum.filmorate.model.User;
 import ru.yandex.practicum.filmorate.service.FilmService;
 import ru.yandex.practicum.filmorate.storage.film.InMemoryFilmStorage;
 
@@ -40,7 +38,7 @@ class FilmControllerTest {
     void addFilm() {
         Film testFilm = filmController.create(film);
         film.setId(testFilm.getId());
-        Assertions.assertTrue(filmController.getFilmService().getInMemoryFilmStorage().getFilms().containsValue(film));
+        Assertions.assertTrue(filmService.getInMemoryFilmStorage().getFilms().containsValue(film));
         Assertions.assertEquals(film, testFilm);
     }
 
@@ -51,8 +49,8 @@ class FilmControllerTest {
                 ,  100);
         film.setId(testFilm.getId());
         filmController.update(film);
-        Assertions.assertTrue(filmController.getFilmService().getInMemoryFilmStorage().getFilms().containsValue(film));
-        Assertions.assertEquals(filmController.getFilmService().getInMemoryFilmStorage().getFilms().get(film.getId()).getName()
+        Assertions.assertTrue(filmService.getInMemoryFilmStorage().getFilms().containsValue(film));
+        Assertions.assertEquals(filmService.getInMemoryFilmStorage().getFilms().get(film.getId()).getName()
                 ,"domsuie isin");
     }
 
@@ -115,8 +113,8 @@ class FilmControllerTest {
     void findAll() {
         filmController.create(film);
         List<Film> testList = filmController.findAll();
-        Assertions.assertEquals(1, filmController.getFilmService().getInMemoryFilmStorage().getFilms().size());
-        Assertions.assertEquals(testList.get(0), filmController.getFilmService().getInMemoryFilmStorage().getFilms().get(film.getId()));
+        Assertions.assertEquals(1, filmService.getInMemoryFilmStorage().getFilms().size());
+        Assertions.assertEquals(testList.get(0), filmService.getInMemoryFilmStorage().getFilms().get(film.getId()));
     }
 
     @Test

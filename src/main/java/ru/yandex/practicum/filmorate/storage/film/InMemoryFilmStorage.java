@@ -24,10 +24,7 @@ public class InMemoryFilmStorage implements FilmStorage {
 
     @Override
     public List<Film> findAll() {
-        List<Film> filmsList = new ArrayList<>();
-        for (Film film : films.values()) {
-            filmsList.add(film);
-        }
+        List<Film> filmsList = new ArrayList<>(films.values());
         log.debug("Текущее количество добавленных фильмов: {}", filmsList.size());
         return filmsList;
     }

@@ -38,7 +38,7 @@ class UserControllerTest {
     void addUser() {
         User testUser = userController.create(user);
         user.setId(testUser.getId());
-        Assertions.assertTrue(userController.getUserService().getInMemoryUserStorage().getUsers().containsValue(user));
+        Assertions.assertTrue(userService.getInMemoryUserStorage().getUsers().containsValue(user));
         Assertions.assertEquals(user, testUser);
     }
 
@@ -47,9 +47,9 @@ class UserControllerTest {
         user = new User("mail@mail.ru", "dolore", LocalDate.of(1946, 8, 20));
         user.setName("");
         User testUser = userController.create(user);
-        Assertions.assertTrue(userController.getUserService().getInMemoryUserStorage().getUsers().containsValue(testUser));
-        Assertions.assertEquals(userController.getUserService().getInMemoryUserStorage().getUsers().get(testUser.getId()).getName(),
-                userController.getUserService().getInMemoryUserStorage().getUsers().get(testUser.getId()).getLogin());
+        Assertions.assertTrue(userService.getInMemoryUserStorage().getUsers().containsValue(testUser));
+        Assertions.assertEquals(userService.getInMemoryUserStorage().getUsers().get(testUser.getId()).getName(),
+                userService.getInMemoryUserStorage().getUsers().get(testUser.getId()).getLogin());
     }
 
     @Test
@@ -57,8 +57,8 @@ class UserControllerTest {
         User testUser = userController.create(user);
         testUser.setName("updateName");
         userController.update(testUser);
-        Assertions.assertTrue(userController.getUserService().getInMemoryUserStorage().getUsers().containsValue(testUser));
-        Assertions.assertEquals(userController.getUserService().getInMemoryUserStorage().getUsers().get(testUser.getId()).getName()
+        Assertions.assertTrue(userService.getInMemoryUserStorage().getUsers().containsValue(testUser));
+        Assertions.assertEquals(userService.getInMemoryUserStorage().getUsers().get(testUser.getId()).getName()
                 , "updateName");
     }
 
@@ -110,8 +110,8 @@ class UserControllerTest {
     void findAll() {
         userController.create(user);
         List<User> testList = userController.findAll();
-        Assertions.assertEquals(1, userController.getUserService().getInMemoryUserStorage().getUsers().size());
-        Assertions.assertEquals(testList.get(0), userController.getUserService().getInMemoryUserStorage().getUsers().get(user.getId()));
+        Assertions.assertEquals(1, userService.getInMemoryUserStorage().getUsers().size());
+        Assertions.assertEquals(testList.get(0), userService.getInMemoryUserStorage().getUsers().get(user.getId()));
     }
 
     @Test

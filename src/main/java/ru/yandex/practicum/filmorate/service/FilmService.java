@@ -71,10 +71,7 @@ public class FilmService implements FilmServiceStorage {
 
     @Override
     public List<Film> getPopularFilms(long count) {
-        List<Film> checkList = new ArrayList<>();
-        for (Film film : inMemoryFilmStorage.getFilms().values()) {
-            checkList.add(film);
-        }
+        List<Film> checkList = new ArrayList<>(inMemoryFilmStorage.getFilms().values());
         log.debug("Предоставлен список " + count + " самых популярных фильмов");
         return checkList.stream()
                 .sorted((f0, f1) -> compare(f0, f1))
@@ -84,5 +81,17 @@ public class FilmService implements FilmServiceStorage {
 
     private int compare(Film f0, Film f1) {
         return f1.getLikes().size() - f0.getLikes().size();
+    }
+
+    public Film createFilm(Film film) {
+        return inMemoryFilmStorage.create(film);
+    }
+
+    public Film updateFilm(Film film) {
+        return inMemoryFilmStorage.update(film);
+    }
+
+    public List<Film> findAll() {
+        return inMemoryFilmStorage.findAll();
     }
 }

@@ -1,8 +1,5 @@
 package ru.yandex.practicum.filmorate.controller;
 
-import lombok.Getter;
-import lombok.Setter;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 import ru.yandex.practicum.filmorate.model.User;
 import ru.yandex.practicum.filmorate.service.UserService;
@@ -14,27 +11,25 @@ import java.util.List;
 @RequestMapping("/users")
 public class UserController {
 
-    @Getter
-    private UserService userService;
+    private final UserService userService;
 
-    @Autowired
     public UserController(UserService userService) {
         this.userService = userService;
     }
 
     @GetMapping
     public List<User> findAll() {
-        return userService.getInMemoryUserStorage().findAll();
+        return userService.findAll();
     }
 
     @PostMapping
     public User create(@Valid @RequestBody User user) {
-        return userService.getInMemoryUserStorage().create(user);
+        return userService.createUser(user);
     }
 
     @PutMapping
     public User update(@Valid @RequestBody User user) {
-        return userService.getInMemoryUserStorage().update(user);
+        return userService.updateUser(user);
     }
 
     @GetMapping("/{id}")

@@ -12,7 +12,6 @@ import ru.yandex.practicum.filmorate.storage.user.InMemoryUserStorage;
 import java.util.ArrayList;
 import java.util.List;
 
-
 @Service
 public class UserService implements UserServiceStorage{
 
@@ -94,6 +93,7 @@ public class UserService implements UserServiceStorage{
         return friends;
     }
 
+    @Override
     public List<User> findCommonFriendsByFriendIdAndUserId(long id, long friendId) {
         checkUserById(id);
         checkUserById(friendId);
@@ -110,5 +110,17 @@ public class UserService implements UserServiceStorage{
         log.debug("Предоставлен общий список друзей пользователя " + inMemoryUserStorage.getUsers().get(id)
                 + " и пользователя " + inMemoryUserStorage.getUsers().get(friendId));
         return friends;
+    }
+
+    public User createUser(User user) {
+        return inMemoryUserStorage.create(user);
+    }
+
+    public User updateUser(User user) {
+        return inMemoryUserStorage.update(user);
+    }
+
+    public List<User> findAll() {
+        return inMemoryUserStorage.findAll();
     }
 }
