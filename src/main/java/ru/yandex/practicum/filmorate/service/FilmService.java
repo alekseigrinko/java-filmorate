@@ -31,7 +31,7 @@ public class FilmService {
         return inMemoryFilmStorage.getFilms().get(id);
     }
 
-    public String putFilm(int id, int userId) {
+    public String putLike(int id, int userId) {
         checkFilm(id);
         checkFilm(userId);
         inMemoryFilmStorage.getFilms().get(id).getLikes().add(userId);
@@ -41,7 +41,7 @@ public class FilmService {
                 + " поставил лайк пользователь с ID:" + userId);
     }
 
-    public String deleteFilm(int id, int userId) {
+    public String deleteLike(int id, int userId) {
         checkFilm(id);
         checkFilm(userId);
         if (!inMemoryFilmStorage.getFilms().get(id).getLikes().contains(userId)) {

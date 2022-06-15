@@ -7,6 +7,7 @@ import org.springframework.http.HttpStatus;
 import ru.yandex.practicum.filmorate.exeption.ObjectNotFoundException;
 import ru.yandex.practicum.filmorate.exeption.ValidationException;
 import ru.yandex.practicum.filmorate.model.Film;
+import ru.yandex.practicum.filmorate.model.User;
 import ru.yandex.practicum.filmorate.service.FilmService;
 import ru.yandex.practicum.filmorate.storage.film.InMemoryFilmStorage;
 
@@ -116,5 +117,34 @@ class FilmControllerTest {
         List<Film> testList = filmController.findAll();
         Assertions.assertEquals(1, filmController.getFilmService().getInMemoryFilmStorage().getFilms().size());
         Assertions.assertEquals(testList.get(0), filmController.getFilmService().getInMemoryFilmStorage().getFilms().get(film.getId()));
+    }
+
+    @Test
+    void getFilm(){
+        filmController.create(film);
+        Film testFilm = filmController.getFilm(film.getId());
+        Assertions.assertEquals(film, testFilm);
+    }
+
+    @Test
+    void checkLikes() {
+        Film testFilm = new Film("test", "description", LocalDate.of(1967, 03, 25)
+                ,  100);
+        Film testFilm2 = new Film("test2", "noitpircsed", LocalDate.of(1967, 03, 25)
+                ,  100);
+        filmController.create(film);
+        filmController.create(testFilm);
+        filmController.create(testFilm2);
+        filmController.putLike(film.getId(),1);
+        filmController.putLike(film.getId(),2);
+        filmController.putLike(film.getId(),3);
+        Assertions.assertEquals(3, film.getLikes().size());
+        filmController.putLike(testFilm.getId(),1);
+        filmController.putLike(testFilm.getId(),2);
+        filmController.putLike(testFilm2.getId(),1);
+        List<Film> popularFilms = filmController.getPopularFilms(1);
+        Assertions.assertEquals(film, popularFilms.get(0));
+        filmController.deleteLike(testFilm2.getId(),1);
+        Assertions.assertTrue(testFilm2.getLikes().isEmpty());
     }
 }

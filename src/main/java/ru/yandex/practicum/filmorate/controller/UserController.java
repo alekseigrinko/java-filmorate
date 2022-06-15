@@ -38,7 +38,7 @@ public class UserController {
     }
 
     @GetMapping("/{id}")
-    public User getFilm(@PathVariable int id){
+    public User getUser(@PathVariable int id){
         return userService.getUser(id);
     }
 

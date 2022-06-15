@@ -24,7 +24,7 @@ class UserControllerTest {
     private static User user;
     private static UserController userController;
     private InMemoryUserStorage inMemoryUserStorage = new InMemoryUserStorage();
-    private UserService userService = new UserService (inMemoryUserStorage);
+    private UserService userService = new UserService(inMemoryUserStorage);
 
 
     @BeforeEach
@@ -113,4 +113,38 @@ class UserControllerTest {
         Assertions.assertEquals(1, userController.getUserService().getInMemoryUserStorage().getUsers().size());
         Assertions.assertEquals(testList.get(0), userController.getUserService().getInMemoryUserStorage().getUsers().get(user.getId()));
     }
+
+    @Test
+    void getUser() {
+        userController.create(user);
+        User testUser = userController.getUser(user.getId());
+        Assertions.assertEquals(user, testUser);
+    }
+
+    @Test
+    void checkFriend() {
+        User testUser = new User("test@mail.ru", "test", LocalDate.of(1946, 8, 20));
+        testUser.setName("Test Name");
+        userController.create(user);
+        userController.create(testUser);
+        userController.putFriend(user.getId(), testUser.getId());
+        boolean test = false;
+        if (user.getFriends().get(0) == testUser.getId()) {
+            test = true;
+        }
+        Assertions.assertTrue(test);
+        User testUser2 = new User("test2@mail.ru", "test2", LocalDate.of(1946, 8, 20));
+        testUser2.setName("Test2 Name");
+        userController.create(testUser2);
+        userController.putFriend(user.getId(), testUser2.getId());
+        userController.putFriend(testUser.getId(), testUser2.getId());
+        List<User> testUsers = userController.findFriends(user.getId());
+        Assertions.assertEquals(2, testUsers.size());
+        testUsers = userController.findAllFriends(user.getId(), testUser.getId());
+        Assertions.assertEquals(1, testUsers.size());
+        userController.deleteFriend(user.getId(), testUser.getId());
+        userController.deleteFriend(user.getId(), testUser2.getId());
+        Assertions.assertTrue(user.getFriends().isEmpty());
+    }
+
 }
