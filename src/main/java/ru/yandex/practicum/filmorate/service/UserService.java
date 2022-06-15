@@ -14,7 +14,7 @@ import java.util.List;
 
 
 @Service
-public class UserService {
+public class UserService implements UserServiceStorage{
 
     @Getter
     InMemoryUserStorage inMemoryUserStorage;
@@ -25,15 +25,17 @@ public class UserService {
         this.inMemoryUserStorage = inMemoryUserStorage;
     }
 
-    public User getUser(long id) {
-        checkUser(id);
+    @Override
+    public User getUserById(long id) {
+        checkUserById(id);
         log.debug("Предоставлена информация по пользователю {}", inMemoryUserStorage.getUsers().get(id));
         return inMemoryUserStorage.getUsers().get(id);
     }
 
-    public String putFriend(long id, long friendId) {
-        checkUser(id);
-        checkUser(friendId);
+    @Override
+    public String putFriendByIdAndUserId(long id, long friendId) {
+        checkUserById(id);
+        checkUserById(friendId);
         if (inMemoryUserStorage.getUsers().get(id).getFriends().contains(friendId)) {
             log.debug("Пользователь ID:" + friendId + " уже является другом");
             return ("Пользователь ID:" + friendId + " уже является другом");
@@ -46,9 +48,10 @@ public class UserService {
                 + " новый друг с ID:" + friendId);
     }
 
-    public String deleteFriend(long id, long friendId) {
-        checkUser(id);
-        checkUser(friendId);
+    @Override
+    public String deleteFriendByIdAndUserId(long id, long friendId) {
+        checkUserById(id);
+        checkUserById(friendId);
         if (!inMemoryUserStorage.getUsers().get(id).getFriends().contains(friendId)) {
             log.warn("Пользователь с ID: " + friendId + " не был другом "
                     + inMemoryUserStorage.getUsers().get(id).getName());
@@ -71,7 +74,8 @@ public class UserService {
                 + " больше не дружит с ID:" + friendId);
     }
 
-    private void checkUser(long id) {
+    @Override
+    public void checkUserById(long id) {
         if ((inMemoryUserStorage.getId() < id) || (id <= 0)) {
             log.warn("Пользователя с таким ID ( {} )не зарегистрировано!", id);
             throw new ObjectNotFoundException("Пользователя с таким ID (" + id
@@ -79,8 +83,9 @@ public class UserService {
         }
     }
 
-    public List<User> findFriends(long id){
-        checkUser(id);
+    @Override
+    public List<User> findFriendsByUserId(long id){
+        checkUserById(id);
         List<User> friends = new ArrayList<>();
         for (long i : inMemoryUserStorage.getUsers().get(id).getFriends()) {
             friends.add(inMemoryUserStorage.getUsers().get(i));
@@ -89,9 +94,9 @@ public class UserService {
         return friends;
     }
 
-    public List<User> findAllFriends(long id, long friendId) {
-        checkUser(id);
-        checkUser(friendId);
+    public List<User> findCommonFriendsByFriendIdAndUserId(long id, long friendId) {
+        checkUserById(id);
+        checkUserById(friendId);
         List<Long> commonFriends = new ArrayList<>();
         for (long check : inMemoryUserStorage.getUsers().get(id).getFriends()) {
             if (inMemoryUserStorage.getUsers().get(friendId).getFriends().contains(check)) {

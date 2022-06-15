@@ -122,7 +122,7 @@ class FilmControllerTest {
     @Test
     void getFilm(){
         filmController.create(film);
-        Film testFilm = filmController.getFilm(film.getId());
+        Film testFilm = filmController.getFilmById(film.getId());
         Assertions.assertEquals(film, testFilm);
     }
 
@@ -135,16 +135,16 @@ class FilmControllerTest {
         filmController.create(film);
         filmController.create(testFilm);
         filmController.create(testFilm2);
-        filmController.putLike(film.getId(),1);
-        filmController.putLike(film.getId(),2);
-        filmController.putLike(film.getId(),3);
+        filmController.putLikeByFilmIdAndUserId(film.getId(),1);
+        filmController.putLikeByFilmIdAndUserId(film.getId(),2);
+        filmController.putLikeByFilmIdAndUserId(film.getId(),3);
         Assertions.assertEquals(3, film.getLikes().size());
-        filmController.putLike(testFilm.getId(),1);
-        filmController.putLike(testFilm.getId(),2);
-        filmController.putLike(testFilm2.getId(),1);
+        filmController.putLikeByFilmIdAndUserId(testFilm.getId(),1);
+        filmController.putLikeByFilmIdAndUserId(testFilm.getId(),2);
+        filmController.putLikeByFilmIdAndUserId(testFilm2.getId(),1);
         List<Film> popularFilms = filmController.getPopularFilms(1);
         Assertions.assertEquals(film, popularFilms.get(0));
-        filmController.deleteLike(testFilm2.getId(),1);
+        filmController.deleteLikeByFilmIdAndUserId(testFilm2.getId(),1);
         Assertions.assertTrue(testFilm2.getLikes().isEmpty());
     }
 }

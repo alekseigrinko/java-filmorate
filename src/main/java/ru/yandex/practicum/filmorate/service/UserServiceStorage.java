@@ -1,0 +1,20 @@
+package ru.yandex.practicum.filmorate.service;
+
+import ru.yandex.practicum.filmorate.model.User;
+
+import java.util.List;
+
+public interface UserServiceStorage {
+
+    User getUserById(long id);
+
+    void checkUserById(long id);
+
+    String putFriendByIdAndUserId(long id, long friendId);
+
+    String deleteFriendByIdAndUserId(long id, long friendId);
+
+    List<User> findFriendsByUserId(long id);
+
+    List<User> findCommonFriendsByFriendIdAndUserId(long id, long friendId);
+}

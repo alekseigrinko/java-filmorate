@@ -1,7 +1,6 @@
 package ru.yandex.practicum.filmorate.controller;
 
 import lombok.Getter;
-import lombok.Setter;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 import ru.yandex.practicum.filmorate.model.Film;
@@ -39,18 +38,18 @@ public class FilmController {
     }
 
     @GetMapping("/{id}")
-    public Film getFilm(@PathVariable long id) {
-        return filmService.getFilm(id);
+    public Film getFilmById(@PathVariable long id) {
+        return filmService.getFilmById(id);
     }
 
     @PutMapping("/{id}/like/{userId}")
-    public String putLike(@PathVariable long id, @PathVariable long userId) {
-        return filmService.putLike(id, userId);
+    public String putLikeByFilmIdAndUserId(@PathVariable long id, @PathVariable long userId) {
+        return filmService.putLikeByFilmIdAndUserId(id, userId);
     }
 
     @DeleteMapping("/{id}/like/{userId}")
-    public String deleteLike(@PathVariable long id, @PathVariable long userId) {
-        return filmService.deleteLike(id, userId);
+    public String deleteLikeByFilmIdAndUserId(@PathVariable long id, @PathVariable long userId) {
+        return filmService.deleteLikeByFilmIdAndUserId(id, userId);
     }
 
     @GetMapping("/popular")

@@ -14,7 +14,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 @Service
-public class FilmService {
+public class FilmService implements FilmServiceStorage {
 
     @Getter
     InMemoryFilmStorage inMemoryFilmStorage;
@@ -25,15 +25,17 @@ public class FilmService {
         this.inMemoryFilmStorage = inMemoryFilmStorage;
     }
 
-    public Film getFilm(long id) {
-        checkFilm(id);
+    @Override
+    public Film getFilmById(long id) {
+        checkFilmById(id);
         log.debug("Предоставлена информация по фильму {}", inMemoryFilmStorage.getFilms().get(id));
         return inMemoryFilmStorage.getFilms().get(id);
     }
 
-    public String putLike(long id, long userId) {
-        checkFilm(id);
-        checkFilm(userId);
+    @Override
+    public String putLikeByFilmIdAndUserId(long id, long userId) {
+        checkFilmById(id);
+        checkFilmById(userId);
         inMemoryFilmStorage.getFilms().get(id).getLikes().add(userId);
         log.debug("Фильму " +  inMemoryFilmStorage.getFilms().get(id).getName()
                 + " поставил лайк пользователь с ID:" + userId);
@@ -41,9 +43,10 @@ public class FilmService {
                 + " поставил лайк пользователь с ID:" + userId);
     }
 
-    public String deleteLike(long id, long userId) {
-        checkFilm(id);
-        checkFilm(userId);
+    @Override
+    public String deleteLikeByFilmIdAndUserId(long id, long userId) {
+        checkFilmById(id);
+        checkFilmById(userId);
         if (!inMemoryFilmStorage.getFilms().get(id).getLikes().contains(userId)) {
             log.warn("Пользователь с ID: " + userId + "еще не ставил лайк фильму "
                     + inMemoryFilmStorage.getFilms().get(id).getName());
@@ -57,7 +60,8 @@ public class FilmService {
                 + inMemoryFilmStorage.getFilms().get(id).getName());
     }
 
-    private void checkFilm(long id) {
+    @Override
+    public void checkFilmById(long id) {
         if ((inMemoryFilmStorage.getId() < id) || (id <= 0)) {
             log.warn("Фильма с таким ID ( {} )не зарегистрировано!", id);
             throw new ObjectNotFoundException("Фильм с таким ID (" + id
@@ -65,6 +69,7 @@ public class FilmService {
         }
     }
 
+    @Override
     public List<Film> getPopularFilms(long count) {
         List<Film> checkList = new ArrayList<>();
         for (Film film : inMemoryFilmStorage.getFilms().values()) {
@@ -78,7 +83,6 @@ public class FilmService {
     }
 
     private int compare(Film f0, Film f1) {
-        int result = f1.getLikes().size() - f0.getLikes().size();
-        return result;
+        return f1.getLikes().size() - f0.getLikes().size();
     }
 }

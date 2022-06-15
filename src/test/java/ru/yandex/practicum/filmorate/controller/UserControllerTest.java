@@ -117,7 +117,7 @@ class UserControllerTest {
     @Test
     void getUser() {
         userController.create(user);
-        User testUser = userController.getUser(user.getId());
+        User testUser = userController.getUserById(user.getId());
         Assertions.assertEquals(user, testUser);
     }
 
@@ -127,7 +127,7 @@ class UserControllerTest {
         testUser.setName("Test Name");
         userController.create(user);
         userController.create(testUser);
-        userController.putFriend(user.getId(), testUser.getId());
+        userController.putFriendByIdAndUserId(user.getId(), testUser.getId());
         boolean test = false;
         if (user.getFriends().get(0) == testUser.getId()) {
             test = true;
@@ -136,14 +136,14 @@ class UserControllerTest {
         User testUser2 = new User("test2@mail.ru", "test2", LocalDate.of(1946, 8, 20));
         testUser2.setName("Test2 Name");
         userController.create(testUser2);
-        userController.putFriend(user.getId(), testUser2.getId());
-        userController.putFriend(testUser.getId(), testUser2.getId());
-        List<User> testUsers = userController.findFriends(user.getId());
+        userController.putFriendByIdAndUserId(user.getId(), testUser2.getId());
+        userController.putFriendByIdAndUserId(testUser.getId(), testUser2.getId());
+        List<User> testUsers = userController.findFriendsByUserId(user.getId());
         Assertions.assertEquals(2, testUsers.size());
-        testUsers = userController.findAllFriends(user.getId(), testUser.getId());
+        testUsers = userController.findCommonFriendsByFriendIdAndUserId(user.getId(), testUser.getId());
         Assertions.assertEquals(1, testUsers.size());
-        userController.deleteFriend(user.getId(), testUser.getId());
-        userController.deleteFriend(user.getId(), testUser2.getId());
+        userController.deleteFriendByIdAndUserId(user.getId(), testUser.getId());
+        userController.deleteFriendByIdAndUserId(user.getId(), testUser2.getId());
         Assertions.assertTrue(user.getFriends().isEmpty());
     }
 
