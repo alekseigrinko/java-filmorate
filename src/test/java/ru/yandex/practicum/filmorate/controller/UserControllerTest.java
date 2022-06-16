@@ -23,8 +23,7 @@ class UserControllerTest {
 
     private static User user;
     private static UserController userController;
-    private InMemoryUserStorage inMemoryUserStorage = new InMemoryUserStorage();
-    private UserService userService = new UserService(inMemoryUserStorage);
+    private UserService userService = new UserService(new InMemoryUserStorage());
 
 
     @BeforeEach
@@ -38,7 +37,7 @@ class UserControllerTest {
     void addUser() {
         User testUser = userController.create(user);
         user.setId(testUser.getId());
-        Assertions.assertTrue(userService.getInMemoryUserStorage().getUsers().containsValue(user));
+        Assertions.assertTrue(userService.getMapUsers().containsValue(user));
         Assertions.assertEquals(user, testUser);
     }
 
@@ -47,9 +46,9 @@ class UserControllerTest {
         user = new User("mail@mail.ru", "dolore", LocalDate.of(1946, 8, 20));
         user.setName("");
         User testUser = userController.create(user);
-        Assertions.assertTrue(userService.getInMemoryUserStorage().getUsers().containsValue(testUser));
-        Assertions.assertEquals(userService.getInMemoryUserStorage().getUsers().get(testUser.getId()).getName(),
-                userService.getInMemoryUserStorage().getUsers().get(testUser.getId()).getLogin());
+        Assertions.assertTrue(userService.getMapUsers().containsValue(testUser));
+        Assertions.assertEquals(userService.getMapUsers().get(testUser.getId()).getName(),
+                userService.getMapUsers().get(testUser.getId()).getLogin());
     }
 
     @Test
@@ -57,8 +56,8 @@ class UserControllerTest {
         User testUser = userController.create(user);
         testUser.setName("updateName");
         userController.update(testUser);
-        Assertions.assertTrue(userService.getInMemoryUserStorage().getUsers().containsValue(testUser));
-        Assertions.assertEquals(userService.getInMemoryUserStorage().getUsers().get(testUser.getId()).getName()
+        Assertions.assertTrue(userService.getMapUsers().containsValue(testUser));
+        Assertions.assertEquals(userService.getMapUsers().get(testUser.getId()).getName()
                 , "updateName");
     }
 
@@ -110,8 +109,8 @@ class UserControllerTest {
     void findAll() {
         userController.create(user);
         List<User> testList = userController.findAll();
-        Assertions.assertEquals(1, userService.getInMemoryUserStorage().getUsers().size());
-        Assertions.assertEquals(testList.get(0), userService.getInMemoryUserStorage().getUsers().get(user.getId()));
+        Assertions.assertEquals(1, userService.getMapUsers().size());
+        Assertions.assertEquals(testList.get(0), userService.getMapUsers().get(user.getId()));
     }
 
     @Test

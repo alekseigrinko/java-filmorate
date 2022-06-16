@@ -23,8 +23,7 @@ class FilmControllerTest {
 
     private static Film film;
     private static FilmController filmController;
-    private InMemoryFilmStorage inMemoryFilmStorage = new InMemoryFilmStorage();
-    private FilmService filmService = new FilmService(inMemoryFilmStorage);
+    private FilmService filmService = new FilmService(new InMemoryFilmStorage());
 
 
     @BeforeEach
@@ -38,7 +37,7 @@ class FilmControllerTest {
     void addFilm() {
         Film testFilm = filmController.create(film);
         film.setId(testFilm.getId());
-        Assertions.assertTrue(filmService.getInMemoryFilmStorage().getFilms().containsValue(film));
+        Assertions.assertTrue(filmService.getMapFilms().containsValue(film));
         Assertions.assertEquals(film, testFilm);
     }
 
@@ -49,8 +48,8 @@ class FilmControllerTest {
                 ,  100);
         film.setId(testFilm.getId());
         filmController.update(film);
-        Assertions.assertTrue(filmService.getInMemoryFilmStorage().getFilms().containsValue(film));
-        Assertions.assertEquals(filmService.getInMemoryFilmStorage().getFilms().get(film.getId()).getName()
+        Assertions.assertTrue(filmService.getMapFilms().containsValue(film));
+        Assertions.assertEquals(filmService.getMapFilms().get(film.getId()).getName()
                 ,"domsuie isin");
     }
 
@@ -113,8 +112,8 @@ class FilmControllerTest {
     void findAll() {
         filmController.create(film);
         List<Film> testList = filmController.findAll();
-        Assertions.assertEquals(1, filmService.getInMemoryFilmStorage().getFilms().size());
-        Assertions.assertEquals(testList.get(0), filmService.getInMemoryFilmStorage().getFilms().get(film.getId()));
+        Assertions.assertEquals(1, filmService.getMapFilms().size());
+        Assertions.assertEquals(testList.get(0), filmService.getMapFilms().get(film.getId()));
     }
 
     @Test

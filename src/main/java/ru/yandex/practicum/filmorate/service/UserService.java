@@ -11,15 +11,14 @@ import ru.yandex.practicum.filmorate.storage.user.InMemoryUserStorage;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 @Service
 public class UserService implements UserServiceStorage{
 
-    @Getter
-    InMemoryUserStorage inMemoryUserStorage;
+    private final InMemoryUserStorage inMemoryUserStorage;
     private static final Logger log = LoggerFactory.getLogger(UserService.class);
 
-    @Autowired
     public UserService(InMemoryUserStorage inMemoryUserStorage) {
         this.inMemoryUserStorage = inMemoryUserStorage;
     }
@@ -122,5 +121,9 @@ public class UserService implements UserServiceStorage{
 
     public List<User> findAll() {
         return inMemoryUserStorage.findAll();
+    }
+
+    public Map<Long, User> getMapUsers() {
+        return inMemoryUserStorage.getUsers();
     }
 }

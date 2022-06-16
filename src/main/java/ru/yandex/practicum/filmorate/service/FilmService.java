@@ -11,16 +11,15 @@ import ru.yandex.practicum.filmorate.storage.film.InMemoryFilmStorage;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 @Service
 public class FilmService implements FilmServiceStorage {
 
-    @Getter
     InMemoryFilmStorage inMemoryFilmStorage;
     private final static Logger log = LoggerFactory.getLogger(FilmService.class);
 
-    @Autowired
     public FilmService(InMemoryFilmStorage inMemoryFilmStorage) {
         this.inMemoryFilmStorage = inMemoryFilmStorage;
     }
@@ -93,5 +92,9 @@ public class FilmService implements FilmServiceStorage {
 
     public List<Film> findAll() {
         return inMemoryFilmStorage.findAll();
+    }
+
+    public Map<Long, Film> getMapFilms() {
+        return inMemoryFilmStorage.getFilms();
     }
 }
