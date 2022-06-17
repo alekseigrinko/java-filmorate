@@ -4,7 +4,6 @@ import lombok.Getter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
-import ru.yandex.practicum.filmorate.exeption.ObjectNotFoundException;
 import ru.yandex.practicum.filmorate.exeption.ValidationException;
 import ru.yandex.practicum.filmorate.model.Film;
 
@@ -41,11 +40,6 @@ public class InMemoryFilmStorage implements FilmStorage {
 
     @Override
     public Film update(Film film) {
-        if ((film.getId() > id) || (film.getId() <= 0)) {
-            log.warn("Фильма с таким ID ( {} )не зарегистрировано!", film.getId());
-            throw new ObjectNotFoundException("Фильма с таким ID (" + film.getId()
-                    + ")не зарегистрировано!");
-        }
         checkAndPut(film);
         films.put(film.getId(), film);
         log.debug("Данные фильма {} обновлены", film);

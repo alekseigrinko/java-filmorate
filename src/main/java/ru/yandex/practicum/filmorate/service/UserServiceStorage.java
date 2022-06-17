@@ -8,8 +8,6 @@ public interface UserServiceStorage {
 
     User getUserById(long id);
 
-    void checkUserById(long id);
-
     String putFriendByIdAndUserId(long id, long friendId);
 
     String deleteFriendByIdAndUserId(long id, long friendId);

@@ -4,7 +4,6 @@ import lombok.Getter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
-import ru.yandex.practicum.filmorate.exeption.ObjectNotFoundException;
 import ru.yandex.practicum.filmorate.exeption.ValidationException;
 import ru.yandex.practicum.filmorate.model.User;
 
@@ -41,11 +40,6 @@ public class InMemoryUserStorage implements UserStorage{
 
     @Override
     public User update(User user) {
-        if ((user.getId() > id) || (user.getId() <= 0)) {
-            log.warn("Пользователя с таким ID ( {} ) не зарегистрировано!", user.getId());
-            throw new ObjectNotFoundException("Пользователя с таким ID (" + user.getId() + ")" +
-                    " не зарегистрировано!");
-        }
         checkAndPut(user);
         users.put(user.getId(), user);
         log.debug("Данные пользователя {} обновлены!", user);

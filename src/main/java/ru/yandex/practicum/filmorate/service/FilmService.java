@@ -3,7 +3,6 @@ package ru.yandex.practicum.filmorate.service;
 import lombok.Getter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import ru.yandex.practicum.filmorate.exeption.ObjectNotFoundException;
 import ru.yandex.practicum.filmorate.model.Film;
@@ -26,15 +25,12 @@ public class FilmService implements FilmServiceStorage {
 
     @Override
     public Film getFilmById(long id) {
-        checkFilmById(id);
         log.debug("Предоставлена информация по фильму {}", inMemoryFilmStorage.getFilms().get(id));
         return inMemoryFilmStorage.getFilms().get(id);
     }
 
     @Override
     public String putLikeByFilmIdAndUserId(long id, long userId) {
-        checkFilmById(id);
-        checkFilmById(userId);
         inMemoryFilmStorage.getFilms().get(id).getLikes().add(userId);
         log.debug("Фильму " +  inMemoryFilmStorage.getFilms().get(id).getName()
                 + " поставил лайк пользователь с ID:" + userId);
@@ -44,8 +40,6 @@ public class FilmService implements FilmServiceStorage {
 
     @Override
     public String deleteLikeByFilmIdAndUserId(long id, long userId) {
-        checkFilmById(id);
-        checkFilmById(userId);
         if (!inMemoryFilmStorage.getFilms().get(id).getLikes().contains(userId)) {
             log.warn("Пользователь с ID: " + userId + "еще не ставил лайк фильму "
                     + inMemoryFilmStorage.getFilms().get(id).getName());
@@ -57,15 +51,6 @@ public class FilmService implements FilmServiceStorage {
                 + inMemoryFilmStorage.getFilms().get(id).getName());
         return ("Пользователю ID: " + userId + " больше не нравится фильм "
                 + inMemoryFilmStorage.getFilms().get(id).getName());
-    }
-
-    @Override
-    public void checkFilmById(long id) {
-        if ((inMemoryFilmStorage.getId() < id) || (id <= 0)) {
-            log.warn("Фильма с таким ID ( {} )не зарегистрировано!", id);
-            throw new ObjectNotFoundException("Фильм с таким ID (" + id
-                    + ")не зарегистрировано!");
-        }
     }
 
     @Override
@@ -96,5 +81,9 @@ public class FilmService implements FilmServiceStorage {
 
     public Map<Long, Film> getMapFilms() {
         return inMemoryFilmStorage.getFilms();
+    }
+
+    public long getId() {
+        return inMemoryFilmStorage.getId();
     }
 }

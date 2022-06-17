@@ -12,7 +12,5 @@ public interface FilmServiceStorage {
 
     String deleteLikeByFilmIdAndUserId(long id, long userId);
 
-    void checkFilmById(long id);
-
     List<Film> getPopularFilms(long count);
 }
