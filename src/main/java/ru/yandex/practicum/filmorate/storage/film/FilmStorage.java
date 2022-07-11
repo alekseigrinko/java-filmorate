@@ -12,5 +12,4 @@ public interface FilmStorage {
 
     Film update(Film film);
 
-    void checkAndPut(Film film);
 }

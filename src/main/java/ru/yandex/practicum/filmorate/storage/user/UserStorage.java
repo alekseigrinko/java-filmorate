@@ -12,5 +12,4 @@ public interface UserStorage {
 
     User update(User user);
 
-    void checkAndPut(User user);
 }

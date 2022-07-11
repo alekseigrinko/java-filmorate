@@ -46,7 +46,6 @@ public class InMemoryUserStorage implements UserStorage{
         return user;
     }
 
-    @Override
     public void checkAndPut(User user) {
         if (user.getLogin().isEmpty() || (user.getLogin().contains(" "))) {
             log.warn("Ошибка написания логина!");
