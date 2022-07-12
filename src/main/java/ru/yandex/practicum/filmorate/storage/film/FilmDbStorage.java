@@ -13,7 +13,7 @@ import java.sql.*;
 import java.time.LocalDate;
 import java.util.List;
 
-@Repository
+@Repository("FilmDbStorage")
 public class FilmDbStorage implements FilmStorage {
 
     private final static Logger log = LoggerFactory.getLogger(FilmDbStorage.class);
