@@ -13,4 +13,10 @@ public interface FilmServiceStorage {
     String deleteLikeByFilmIdAndUserId(long id, long userId);
 
     List<Film> getPopularFilms(long count);
+
+    Film createFilm(Film film);
+
+    Film updateFilm(Film film);
+
+    List<Film> findAll();
 }

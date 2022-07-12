@@ -1,0 +1,54 @@
+package ru.yandex.practicum.filmorate.storage.genre;
+
+import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.jdbc.support.GeneratedKeyHolder;
+import org.springframework.jdbc.support.KeyHolder;
+import org.springframework.stereotype.Repository;
+import ru.yandex.practicum.filmorate.model.Genre;
+
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.util.List;
+
+@Repository
+public class GenreDbStorage implements GenreStorage {
+    JdbcTemplate jdbcTemplate;
+
+    public GenreDbStorage(JdbcTemplate jdbcTemplate) {
+        this.jdbcTemplate = jdbcTemplate;
+    }
+
+
+    @Override
+    public List<Genre> findAll() {
+        final String sqlQuery = "SELECT * FROM GENRES";
+        final List<Genre> genres = jdbcTemplate.query(sqlQuery, this::makeGenre);
+        return genres;
+    }
+
+    @Override
+    public Genre create(String name) {
+        String sqlQuery = "INSERT INTO GENRES (NAME) VALUES (?)";
+        KeyHolder keyHolder = new GeneratedKeyHolder();
+        Genre genre = new Genre(keyHolder.getKey().longValue(), name);
+        jdbcTemplate.update(connection -> {
+            PreparedStatement stmt = connection.prepareStatement(sqlQuery, new String[]{"GENRE_ID"});
+            stmt.setString(1, genre.getName());
+            return stmt;
+        }, keyHolder);
+        return genre;
+    }
+
+    @Override
+    public void deleteGenre(long genreId) {
+        String sqlQuery = "DELETE FROM GENRES WHERE GENRE_ID = ?";
+        jdbcTemplate.update(sqlQuery, genreId);
+    }
+
+    public Genre makeGenre(ResultSet rs, int rowNum) throws SQLException {
+        long genreId = rs.getLong("GENRE_ID");
+        String name = rs.getString("NAME");
+        return new Genre(genreId, name);
+    }
+}

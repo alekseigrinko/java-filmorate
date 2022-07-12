@@ -1,26 +1,27 @@
 package ru.yandex.practicum.filmorate.storage.film;
 
-import lombok.Getter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
-import org.springframework.stereotype.Component;
-import ru.yandex.practicum.filmorate.exeption.ValidationException;
+import org.springframework.stereotype.Repository;
 import ru.yandex.practicum.filmorate.model.*;
 
 import java.sql.*;
 import java.time.LocalDate;
-import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 
-@Component
+@Repository
 public class FilmDbStorage implements FilmStorage {
 
     private final static Logger log = LoggerFactory.getLogger(FilmDbStorage.class);
-    JdbcTemplate jdbcTemplate = new JdbcTemplate();
+    JdbcTemplate jdbcTemplate;
+
+    public FilmDbStorage(JdbcTemplate jdbcTemplate) {
+        this.jdbcTemplate = jdbcTemplate;
+    }
 
     @Override
     public List<Film> findAll() {

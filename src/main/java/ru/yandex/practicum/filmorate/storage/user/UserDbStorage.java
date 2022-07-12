@@ -6,37 +6,24 @@ import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
-import org.springframework.stereotype.Component;
+import org.springframework.stereotype.Repository;
 import ru.yandex.practicum.filmorate.model.User;
 
 import java.sql.*;
 import java.time.LocalDate;
 import java.util.List;
 
-@Component
-@Qualifier
+@Repository
 public class UserDbStorage implements UserStorage {
 
-    private final JdbcTemplate jdbcTemplate = new JdbcTemplate();
+    private final JdbcTemplate jdbcTemplate;
 
     private static final Logger log = LoggerFactory.getLogger(UserDbStorage.class);
 
-    /*@Override
-    public List<User> findAll() {
-        final String sqlQuery = "SELECT * FROM USERS";
-        final List<User> users = jdbcTemplate.query(sqlQuery, new RowMapper<User>() {
-            @Override
-            public User mapRow(ResultSet rs, int rowNum) throws SQLException {
-                Integer id = rs.getInt("USER_ID");
-                String email = rs.getString("EMAIL");
-                String login = rs.getString("LOGIN");
-                String name = rs.getString("NAME");
-                LocalDate birthday = rs.getDate("BIRTHDAY").toLocalDate();
-                return new User(id, email, login, name, birthday);
-            }
-        });
-        return users;
-    }*/
+    public UserDbStorage(JdbcTemplate jdbcTemplate) {
+        this.jdbcTemplate = jdbcTemplate;
+    }
+
 
     @Override
     public List<User> findAll() {

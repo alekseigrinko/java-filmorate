@@ -2,11 +2,9 @@ package ru.yandex.practicum.filmorate.storage.friendship;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
-import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Repository;
 import ru.yandex.practicum.filmorate.model.Friendship;
 import ru.yandex.practicum.filmorate.model.FriendshipStatus;
@@ -14,7 +12,6 @@ import ru.yandex.practicum.filmorate.model.FriendshipStatus;
 import java.sql.*;
 import java.util.List;
 
-@SuppressWarnings("ALL")
 @Repository
 public class FriendshipDbStorage implements FriendshipStorage {
 
@@ -22,12 +19,13 @@ public class FriendshipDbStorage implements FriendshipStorage {
 
     private static final Logger log = LoggerFactory.getLogger(FriendshipDbStorage.class);
 
-    @Autowired
-    public FriendshipDbStorage(JdbcTemplate jdbcTemplate) {
+
+    private FriendshipDbStorage(JdbcTemplate jdbcTemplate) {
         this.jdbcTemplate = jdbcTemplate;
         createFriendshipStatus("confirmed");
         createFriendshipStatus("unconfirmed");
     }
+
 
     @Override
     public List<Friendship> findAll() {
@@ -64,8 +62,8 @@ public class FriendshipDbStorage implements FriendshipStorage {
     }
 
     public void deleteFriendship(long userId, long friendId) {
-            String sqlQuery = "DELETE FROM FRIENDSHIPS WHERE USER_ID = ? AND FRIEND_ID = ?";
-            jdbcTemplate.update(sqlQuery, userId, friendId);
+        String sqlQuery = "DELETE FROM FRIENDSHIPS WHERE USER_ID = ? AND FRIEND_ID = ?";
+        jdbcTemplate.update(sqlQuery, userId, friendId);
     }
 
     public Friendship makeFriendship(ResultSet rs, int rowNum) throws SQLException {
@@ -84,14 +82,14 @@ public class FriendshipDbStorage implements FriendshipStorage {
 
     Long getFriendshipStatus(String nameStatus) {
         String sqlQuery = "SELECT * FROM FRIENDSHIP_STATUSES WHERE NAME = ?";
-        final List<FriendshipStatus> friendshipStatuses = jdbcTemplate.query(sqlQuery, this::makeFriendshipStatus,nameStatus);
+        final List<FriendshipStatus> friendshipStatuses = jdbcTemplate.query(sqlQuery, this::makeFriendshipStatus, nameStatus);
         if (friendshipStatuses.size() != 1) {
             // TODO not found
         }
         return friendshipStatuses.get(0).getFriendShipStatusId();
     }
 
-    private void createFriendshipStatus(String nameStatus){
+    private void createFriendshipStatus(String nameStatus) {
         String sqlQuery = "INSERT INTO FRIENDSHIP_STATUSES (NAME) VALUES (?)";
         KeyHolder keyHolder = new GeneratedKeyHolder();
         jdbcTemplate.update(connection -> {

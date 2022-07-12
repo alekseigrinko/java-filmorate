@@ -3,6 +3,7 @@ package ru.yandex.practicum.filmorate.service;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.stereotype.Repository;
 import org.springframework.stereotype.Service;
 import ru.yandex.practicum.filmorate.model.Film;
 import ru.yandex.practicum.filmorate.storage.film.FilmDbStorage;
@@ -11,18 +12,20 @@ import ru.yandex.practicum.filmorate.storage.filmlike.FilmLikeDbStorage;
 import java.util.List;
 import java.util.stream.Collectors;
 
-@Service
+@Service("FilmDbService")
 public class FilmDbService implements FilmServiceStorage {
 
     FilmDbStorage filmDbStorage;
     FilmLikeDbStorage filmLikeDbStorage;
     private final static Logger log = LoggerFactory.getLogger(FilmDbService.class);
-    JdbcTemplate jdbcTemplate = new JdbcTemplate();
+    JdbcTemplate jdbcTemplate;
 
-    public FilmDbService(FilmDbStorage filmDbStorage, FilmLikeDbStorage filmLikeDbStorage) {
+    public FilmDbService(FilmDbStorage filmDbStorage, FilmLikeDbStorage filmLikeDbStorage, JdbcTemplate jdbcTemplate) {
         this.filmDbStorage = filmDbStorage;
         this.filmLikeDbStorage = filmLikeDbStorage;
+        this.jdbcTemplate = jdbcTemplate;
     }
+
 
     @Override
     public Film getFilmById(long id) {
@@ -57,14 +60,17 @@ public class FilmDbService implements FilmServiceStorage {
         return films;
     }
 
+    @Override
     public Film createFilm(Film film) {
         return filmDbStorage.create(film);
     }
 
+    @Override
     public Film updateFilm(Film film) {
         return filmDbStorage.update(film);
     }
 
+    @Override
     public List<Film> findAll() {
         return filmDbStorage.findAll();
     }

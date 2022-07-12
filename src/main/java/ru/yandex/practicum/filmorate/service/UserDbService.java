@@ -4,6 +4,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
+import org.springframework.stereotype.Repository;
 import org.springframework.stereotype.Service;
 import ru.yandex.practicum.filmorate.exeption.ObjectNotFoundException;
 import ru.yandex.practicum.filmorate.model.Friendship;
@@ -20,7 +21,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
-@Service
+@Service("UserDbService")
 public class UserDbService implements UserServiceStorage{
 
     private final UserDbStorage userDbStorage;
@@ -79,14 +80,17 @@ public class UserDbService implements UserServiceStorage{
         return friends;
     }
 
+    @Override
     public User createUser(User user) {
         return userDbStorage.create(user);
     }
 
+    @Override
     public User updateUser(User user) {
         return userDbStorage.update(user);
     }
 
+    @Override
     public List<User> findAll() {
         return userDbStorage.findAll();
     }

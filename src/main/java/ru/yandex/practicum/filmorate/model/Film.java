@@ -27,6 +27,7 @@ public class Film {
         this.releaseDate = releaseDate;
         this.duration = duration;
     }
+
     public Film(long id, String name, String description, LocalDate releaseDate, int duration, long mpaRatingId) {
         this.id = id;
         this.name = name;
