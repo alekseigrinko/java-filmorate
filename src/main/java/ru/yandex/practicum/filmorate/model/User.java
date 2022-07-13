@@ -11,7 +11,7 @@ import java.util.List;
 @Getter
 @Setter
 @EqualsAndHashCode
-@RequiredArgsConstructor
+@ToString
 public class User {
     private long id;
     @Email
@@ -20,7 +20,7 @@ public class User {
     private final String login;
     private String name;
     private final LocalDate birthday;
-    private List<Long> friends = new ArrayList<>();
+    /*private List<Long> friends = new ArrayList<>();*/
 
     public User(long id, String email, String login, String name, LocalDate birthday) {
         this.id = id;

@@ -1,39 +1,46 @@
 package ru.yandex.practicum.filmorate.model;
 
 import lombok.*;
+import org.springframework.beans.factory.annotation.Qualifier;
 
 import javax.validation.constraints.NotEmpty;
 import java.time.LocalDate;
 import java.util.HashSet;
 import java.util.Set;
 
-@Getter
+/*@Getter
 @Setter
 @EqualsAndHashCode
+@ToString*/
+@Data
 public class Film {
 
     private long id;
     @NotEmpty
-    private final String name;
-    private final String description;
-    private final LocalDate releaseDate;
-    private final int duration;
-    private long mpaRatingId;
-    private Set<Long> likes = new HashSet<>();
+    private String name;
+    private String description;
+    private LocalDate releaseDate;
+    private int duration;
+    private Mpa mpa;
+    /*private Set<Long> likes = new HashSet<>();*/
 
-    public Film(String name, String description, LocalDate releaseDate, int duration) {
+    /*public Film(String name, String description, LocalDate releaseDate, int duration) {
         this.name = name;
         this.description = description;
         this.releaseDate = releaseDate;
         this.duration = duration;
     }
-
-    public Film(long id, String name, String description, LocalDate releaseDate, int duration, long mpaRatingId) {
+*/
+    public Film(long id, String name, String description, LocalDate releaseDate, int duration, Mpa mpa) {
         this.id = id;
         this.name = name;
         this.description = description;
         this.releaseDate = releaseDate;
         this.duration = duration;
-        this.mpaRatingId = mpaRatingId;
+        this.mpa = mpa;
+    }
+
+    public Film() {
+
     }
 }

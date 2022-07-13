@@ -20,10 +20,8 @@ public class FriendshipDbStorage implements FriendshipStorage {
     private static final Logger log = LoggerFactory.getLogger(FriendshipDbStorage.class);
 
 
-    private FriendshipDbStorage(JdbcTemplate jdbcTemplate) {
+    public FriendshipDbStorage(JdbcTemplate jdbcTemplate) {
         this.jdbcTemplate = jdbcTemplate;
-        createFriendshipStatus("confirmed");
-        createFriendshipStatus("unconfirmed");
     }
 
 

@@ -13,4 +13,5 @@ public interface FriendshipStorage {
     long create(long userId, long friendId);
 
     String updateFriendshipStatus(Long friendshipId);
+
 }
