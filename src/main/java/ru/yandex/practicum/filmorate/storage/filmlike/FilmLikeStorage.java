@@ -12,4 +12,7 @@ public interface FilmLikeStorage {
     FilmLike create(long filmId, long userId);
 
     void deleteFilmLike(long filmId, long userId);
+
+    List<Long> getPopularFilms (long count);
+
 }

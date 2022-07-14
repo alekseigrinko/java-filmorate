@@ -5,6 +5,7 @@ import lombok.*;
 @Getter
 @Setter
 @EqualsAndHashCode
+@ToString
 @AllArgsConstructor
 public class FilmLike {
     private final long filmLikeId;

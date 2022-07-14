@@ -19,4 +19,5 @@ public interface FilmServiceStorage {
     Film updateFilm(Film film);
 
     List<Film> findAll();
+
 }

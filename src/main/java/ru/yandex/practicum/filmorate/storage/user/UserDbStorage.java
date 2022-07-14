@@ -2,11 +2,12 @@ package ru.yandex.practicum.filmorate.storage.user;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Repository;
+import ru.yandex.practicum.filmorate.exeption.ObjectNotFoundException;
+import ru.yandex.practicum.filmorate.exeption.ValidationException;
 import ru.yandex.practicum.filmorate.model.User;
 
 import java.sql.*;
@@ -43,6 +44,7 @@ public class UserDbStorage implements UserStorage {
 
     @Override
     public User create(User user) {
+        checkUser(user);
         String sqlQuery = "INSERT INTO USERS (EMAIL, LOGIN, NAME, BIRTHDAY) VALUES (?, ?, ?, ?)";
         KeyHolder keyHolder = new GeneratedKeyHolder();
         jdbcTemplate.update(connection -> {
@@ -64,6 +66,8 @@ public class UserDbStorage implements UserStorage {
 
     @Override
     public User update(User user) {
+        checkUserId(user.getId());
+        checkUser(user);
         String sqlQuery = "UPDATE USERS SET " +
                 "EMAIL = ?, LOGIN = ?, NAME = ?, BIRTHDAY = ? " +
                 "WHERE USER_ID = ?";
@@ -77,4 +81,37 @@ public class UserDbStorage implements UserStorage {
         return user;
     }
 
+    @Override
+    public User getUserById (long id) {
+        checkUserId(id);
+        String sqlQuery = "SELECT * FROM USERS WHERE USER_ID = ?";
+        final List<User> users = jdbcTemplate.query(sqlQuery, this::makeUser, id);
+        if (users.size() != 1) {
+            // TODO not found
+        }
+        return users.get(0);
+    }
+
+    private void checkUser(User user) {
+        if (user.getLogin().isEmpty() || (user.getLogin().contains(" "))) {
+            log.warn("Ошибка написания логина!");
+            throw new ValidationException("Ошибка написания логина!");
+        }
+        if (user.getBirthday().isAfter(LocalDate.now())) {
+            log.warn("Дата дня рождения не наступила!");
+            throw new ValidationException("Дата дня рождения не наступила!");
+        }
+        if (user.getName().isEmpty()) {
+            user.setName(user.getLogin());
+        }
+    }
+
+    public void checkUserId(long id) {
+        String sqlQuery = "SELECT * FROM USERS WHERE USER_ID = ?";
+        final List<User> users = jdbcTemplate.query(sqlQuery, this::makeUser, id);
+        if (users.size() != 1) {
+            log.warn("Пользователя с ID " + id + " не найдено!");
+            throw new ObjectNotFoundException("Пользователя с ID " + id + " не найдено!");
+        }
+    }
 }

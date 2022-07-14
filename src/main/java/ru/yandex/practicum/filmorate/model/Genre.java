@@ -7,6 +7,6 @@ import lombok.*;
 @EqualsAndHashCode
 @AllArgsConstructor
 public class Genre {
-    private final long genreId;
+    private final long id;
     private String name;
 }

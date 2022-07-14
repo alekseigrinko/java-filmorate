@@ -5,7 +5,9 @@ import org.springframework.beans.factory.annotation.Qualifier;
 
 import javax.validation.constraints.NotEmpty;
 import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
 /*@Getter
@@ -22,6 +24,7 @@ public class Film {
     private LocalDate releaseDate;
     private int duration;
     private Mpa mpa;
+    private List<Genre> genres = new ArrayList<>();
     /*private Set<Long> likes = new HashSet<>();*/
 
     /*public Film(String name, String description, LocalDate releaseDate, int duration) {

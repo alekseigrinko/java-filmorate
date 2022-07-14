@@ -11,4 +11,6 @@ public interface GenreStorage {
     Genre create(String name);
 
     void deleteGenre(long genreId);
+
+    Genre getGenreById(long genreId);
 }

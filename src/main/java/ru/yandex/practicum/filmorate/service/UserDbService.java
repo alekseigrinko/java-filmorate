@@ -10,6 +10,7 @@ import ru.yandex.practicum.filmorate.storage.friendship.FriendshipDbStorage;
 import ru.yandex.practicum.filmorate.storage.user.UserDbStorage;
 
 import java.util.List;
+import java.util.TreeSet;
 import java.util.stream.Collectors;
 
 @Service("UserDbService")
@@ -30,12 +31,7 @@ public class UserDbService implements UserServiceStorage{
 
     @Override
     public User getUserById(long id) {
-        String sqlQuery = "SELECT * FROM USERS WHERE USER_ID = ?";
-        final List<User> users = jdbcTemplate.query(sqlQuery, userDbStorage::makeUser,id);
-        if (users.size() != 1) {
-            // TODO not found
-        }
-        return users.get(0);
+        return userDbStorage.getUserById(id);
     }
 
     @Override
@@ -46,29 +42,25 @@ public class UserDbService implements UserServiceStorage{
 
     @Override
     public String deleteFriendByIdAndUserId(long id, long friendId) {
-        friendshipDbStorage.deleteFriendship(id, friendId);
+        friendshipDbStorage.deleteFriendshipByUserIdFriendId(id, friendId);
         return "Дружба пользователя " + id + " и " + friendId + " удалена";
     }
 
     @Override
     public List<User> findFriendsByUserId(long id){
-        final String sqlQuery = "SELECT * FROM FRIENDSHIPS WHERE USER_ID=?";
-        List<User> friends = jdbcTemplate.query(sqlQuery, friendshipDbStorage::makeFriendship, id).stream()
-                .map(Friendship::getFriendId)
-                .map(this::getUserById)
+        List<User> friends = friendshipDbStorage.getFriendshipByUserId(id).stream()
+                .map(friendship -> getUserById(friendship.getFriendId()))
                 .collect(Collectors.toList());
+        System.out.println(friends);
         return friends;
     }
 
     @Override
     public List<User> findCommonFriendsByFriendIdAndUserId(long id, long friendId) {
-        final String sqlQuery = "SELECT * FROM FRIENDSHIPS WHERE USER_ID = ? AND USER_ID = ?";
-        final List<Friendship> friendships = jdbcTemplate.query(sqlQuery, friendshipDbStorage::makeFriendship, id, friendId);
-        List<User> friends = friendships.stream()
-                .map(Friendship::getFriendId)
-                .map(this::getUserById)
+        List<User> commonFriends = friendshipDbStorage.findCommonFriendsByFriendIdAndUserId(id, friendId).stream()
+                .map(friendship -> getUserById(friendship.getFriendId()))
                 .collect(Collectors.toList());
-        return friends;
+        return commonFriends;
     }
 
     @Override

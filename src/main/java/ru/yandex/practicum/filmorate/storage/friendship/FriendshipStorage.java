@@ -1,9 +1,6 @@
 package ru.yandex.practicum.filmorate.storage.friendship;
 
-import ru.yandex.practicum.filmorate.model.Film;
 import ru.yandex.practicum.filmorate.model.Friendship;
-import ru.yandex.practicum.filmorate.model.FriendshipStatus;
-import ru.yandex.practicum.filmorate.model.User;
 
 import java.util.List;
 
@@ -14,4 +11,10 @@ public interface FriendshipStorage {
 
     String updateFriendshipStatus(Long friendshipId);
 
+
+    void deleteFriendshipByUserIdFriendId(long userId, long friendId);
+
+    List<Friendship> getFriendshipByUserId (long id);
+
+    List<Friendship> findCommonFriendsByFriendIdAndUserId(long id, long friendId);
 }

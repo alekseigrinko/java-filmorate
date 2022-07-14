@@ -5,6 +5,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Service;
 import ru.yandex.practicum.filmorate.model.Film;
+import ru.yandex.practicum.filmorate.model.FilmLike;
 import ru.yandex.practicum.filmorate.storage.film.FilmDbStorage;
 import ru.yandex.practicum.filmorate.storage.filmlike.FilmLikeDbStorage;
 
@@ -25,20 +26,14 @@ public class FilmDbService implements FilmServiceStorage {
         this.jdbcTemplate = jdbcTemplate;
     }
 
-
     @Override
     public Film getFilmById(long id) {
-        String sqlQuery = "SELECT * FROM FILMS WHERE FILM_ID = ?";
-        final List<Film> films = jdbcTemplate.query(sqlQuery, filmDbStorage::makeFilm, id);
-        if (films.size() != 1) {
-            // TODO not found
-        }
-        return films.get(0);
+        return filmDbStorage.getFilmById(id);
     }
 
     @Override
     public String putLikeByFilmIdAndUserId(long id, long userId) {
-        return "Лайк фильму поставлен: " + filmLikeDbStorage.create(id, userId);
+        return "Поставлен лайк: " + filmLikeDbStorage.create(id, userId).toString();
     }
 
     @Override
@@ -49,14 +44,16 @@ public class FilmDbService implements FilmServiceStorage {
 
     @Override
     public List<Film> getPopularFilms(long count) {
-        final String sqlQuery = "SELECT FILM_ID FROM FILM_LIKES " +
-                "GROUP BY FILM_ID " +
-                "ORDER BY COUNT(USER_ID) DESC " +
-                "LIMIT ?";
-        List<Film> films = jdbcTemplate.queryForList(sqlQuery, Long.class).stream()
-                .map(this::getFilmById)
-                .collect(Collectors.toList());
-        return films;
+        List<FilmLike> likes = filmLikeDbStorage.findAll();
+        if (likes.size() != 0) {
+            List<Film> films = filmLikeDbStorage.getPopularFilms(count).stream()
+                    .map(this::getFilmById)
+                    .collect(Collectors.toList());
+            /*findAll().stream().filter(film -> !films.contains(film)).forEach(films::add);*/
+            return films;
+        } else {
+            return findAll();
+        }
     }
 
     @Override

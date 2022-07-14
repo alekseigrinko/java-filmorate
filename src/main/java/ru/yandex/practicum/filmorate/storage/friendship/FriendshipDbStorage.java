@@ -6,8 +6,11 @@ import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Repository;
+import ru.yandex.practicum.filmorate.exeption.ObjectNotFoundException;
 import ru.yandex.practicum.filmorate.model.Friendship;
 import ru.yandex.practicum.filmorate.model.FriendshipStatus;
+import ru.yandex.practicum.filmorate.model.User;
+import ru.yandex.practicum.filmorate.storage.user.UserDbStorage;
 
 import java.sql.*;
 import java.util.List;
@@ -19,9 +22,10 @@ public class FriendshipDbStorage implements FriendshipStorage {
 
     private static final Logger log = LoggerFactory.getLogger(FriendshipDbStorage.class);
 
-
-    public FriendshipDbStorage(JdbcTemplate jdbcTemplate) {
+private UserDbStorage userDbStorage;
+    public FriendshipDbStorage(JdbcTemplate jdbcTemplate, UserDbStorage userDbStorage) {
         this.jdbcTemplate = jdbcTemplate;
+        this.userDbStorage = userDbStorage;
     }
 
 
@@ -34,24 +38,27 @@ public class FriendshipDbStorage implements FriendshipStorage {
 
     @Override
     public long create(long userId, long friendId) {
-        String sqlQuery = "INSERT INTO FRIENDSHIPS (USER_ID, FRIEND_ID, FRIENDSHIP_STATUSES_ID) VALUES (?, ?, ?)";
+        userDbStorage.checkUserId(userId);
+        userDbStorage.checkUserId(friendId);
+        String sqlQuery = "INSERT INTO FRIENDSHIPS (USER_ID, FRIEND_ID, FRIENDSHIP_STATUS_ID) VALUES (?, ?, ?)";
         KeyHolder keyHolder = new GeneratedKeyHolder();
-        Friendship friendship = new Friendship(keyHolder.getKey().longValue(), userId, friendId
-                , getFriendshipStatus("unconfirmed"));
         jdbcTemplate.update(connection -> {
             PreparedStatement stmt = connection.prepareStatement(sqlQuery, new String[]{"FRIENDSHIP_ID"});
-            stmt.setLong(1, friendship.getUserId());
-            stmt.setLong(2, friendship.getFriendId());
-            stmt.setLong(3, friendship.getGetFriendshipStatusId());
+            stmt.setLong(1, userId);
+            stmt.setLong(2, friendId);
+            stmt.setLong(3, getFriendshipStatus("unconfirmed"));
             return stmt;
         }, keyHolder);
+        Friendship friendship = new Friendship(keyHolder.getKey().longValue(), userId, friendId
+                , getFriendshipStatus("unconfirmed"));
         return friendship.getFriendshipId();
     }
 
     @Override
     public String updateFriendshipStatus(Long friendship_id) {
+        checkFriendshipId(friendship_id);
         String sqlQuery = "UPDATE FRIENDSHIPS SET " +
-                "FRIENDSHIP_STATUSES_ID = ?" +
+                "FRIENDSHIP_STATUS_ID = ?" +
                 "WHERE FRIENDSHIP_ID = ?";
         jdbcTemplate.update(sqlQuery
                 , getFriendshipStatus("confirmed")
@@ -59,7 +66,10 @@ public class FriendshipDbStorage implements FriendshipStorage {
         return "Дружба ID " + friendship_id + " подтверждена";
     }
 
-    public void deleteFriendship(long userId, long friendId) {
+    @Override
+    public void deleteFriendshipByUserIdFriendId(long userId, long friendId) {
+        userDbStorage.checkUserId(userId);
+        userDbStorage.checkUserId(friendId);
         String sqlQuery = "DELETE FROM FRIENDSHIPS WHERE USER_ID = ? AND FRIEND_ID = ?";
         jdbcTemplate.update(sqlQuery, userId, friendId);
     }
@@ -72,19 +82,19 @@ public class FriendshipDbStorage implements FriendshipStorage {
         return new Friendship(friendshipId, userId, friendId, friendshipStatusId);
     }
 
-    public FriendshipStatus makeFriendshipStatus(ResultSet rs, int rowNum) throws SQLException {
-        long friendshipStatusId = rs.getLong("FRIENDSHIP_STATUS_ID");
-        String name = rs.getString("NAME");
-        return new FriendshipStatus(friendshipStatusId, name);
-    }
-
-    Long getFriendshipStatus(String nameStatus) {
+    public Long getFriendshipStatus(String nameStatus) {
         String sqlQuery = "SELECT * FROM FRIENDSHIP_STATUSES WHERE NAME = ?";
         final List<FriendshipStatus> friendshipStatuses = jdbcTemplate.query(sqlQuery, this::makeFriendshipStatus, nameStatus);
         if (friendshipStatuses.size() != 1) {
             // TODO not found
         }
         return friendshipStatuses.get(0).getFriendShipStatusId();
+    }
+
+    public FriendshipStatus makeFriendshipStatus(ResultSet rs, int rowNum) throws SQLException {
+        long friendshipStatusId = rs.getLong("FRIENDSHIP_STATUS_ID");
+        String name = rs.getString("NAME");
+        return new FriendshipStatus(friendshipStatusId, name);
     }
 
     private void createFriendshipStatus(String nameStatus) {
@@ -95,5 +105,33 @@ public class FriendshipDbStorage implements FriendshipStorage {
             stmt.setString(1, nameStatus);
             return stmt;
         }, keyHolder);
+    }
+
+    @Override
+    public List<Friendship> getFriendshipByUserId (long id) {
+        userDbStorage.checkUserId(id);
+        final String sqlQuery = "SELECT * FROM FRIENDSHIPS WHERE USER_ID=?";
+        List<Friendship> friends = jdbcTemplate.query(sqlQuery, this::makeFriendship, id);
+        return friends;
+    }
+
+    @Override
+    public List<Friendship> findCommonFriendsByFriendIdAndUserId(long id, long friendId) {
+        userDbStorage.checkUserId(id);
+        userDbStorage.checkUserId(friendId);
+        final String sqlQuery =
+                "SELECT u.* FROM FRIENDSHIPS u, FRIENDSHIPS f  " +
+                        "WHERE u.FRIEND_ID = f.FRIEND_ID AND u.USER_ID = ? AND f.USER_ID = ?";
+        final List<Friendship> friendships = jdbcTemplate.query(sqlQuery, this::makeFriendship, id, friendId);
+        return friendships;
+    }
+
+    public void checkFriendshipId(long id) {
+        String sqlQuery = "SELECT * FROM FRIENDSHIPS WHERE FRIENDSHIP_ID = ?";
+        final List<Friendship> users = jdbcTemplate.query(sqlQuery, this::makeFriendship, id);
+        if (users.size() != 1) {
+            log.warn("Дружбы с ID " + id + " не найдено!");
+            throw new ObjectNotFoundException("Дружбы с ID " + id + " не найдено!");
+        }
     }
 }
