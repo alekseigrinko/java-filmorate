@@ -61,13 +61,6 @@ public class FilmDbStorage implements FilmStorage {
         film.setId(keyHolder.getKey().longValue());
         film.setMpa(getMpaRating(film.getMpa().getId()));
         updateFilmGenre(film);
-        /*if (film.getGenres().size() != 0) {
-            film.getGenres().forEach(genre -> filmGenreDbStorage.create(film.getId(), genre.getId()));
-            List<Genre> genresWithName = film.getGenres().stream()
-                    .map(genre -> genreDbStorage.getGenreById(genre.getId()))
-                    .collect(Collectors.toList());
-            film.setGenres(genresWithName);
-        }*/
         return film;
     }
 
@@ -132,13 +125,6 @@ public class FilmDbStorage implements FilmStorage {
         );
         filmGenreDbStorage.deleteFilmGenreByFilmId(film.getId());
         updateFilmGenre(film);
-        /*if (film.getGenres().size() != 0) {
-            film.getGenres().forEach(genre -> filmGenreDbStorage.create(film.getId(), genre.getId()));
-            List<Genre> genresWithName = film.getGenres().stream()
-                    .map(genre -> genreDbStorage.getGenreById(genre.getId()))
-                    .collect(Collectors.toList());
-            film.setGenres(genresWithName);
-        }*/
         return film;
     }
 
@@ -193,8 +179,9 @@ public class FilmDbStorage implements FilmStorage {
 
     private void updateFilmGenre(Film film) {
         if (film.getGenres().size() != 0) {
-            film.getGenres().forEach(genre -> filmGenreDbStorage.create(film.getId(), genre.getId()));
+            film.getGenres().stream().distinct().forEach(genre -> filmGenreDbStorage.create(film.getId(), genre.getId()));
             List<Genre> genresWithName = film.getGenres().stream()
+                    .distinct()
                     .map(genre -> genreDbStorage.getGenreById(genre.getId()))
                     .collect(Collectors.toList());
             film.setGenres(genresWithName);

@@ -9,7 +9,6 @@ import ru.yandex.practicum.filmorate.service.UserServiceStorage;
 
 import javax.validation.Valid;
 import java.util.List;
-import java.util.TreeSet;
 
 @RestController
 @RequestMapping("/users")
@@ -25,65 +24,49 @@ public class UserController {
 
     @GetMapping
     public List<User> findAll() {
+        log.debug("Получение всех пользователей");
         return userServiceStorage.findAll();
     }
 
     @PostMapping
     public User create(@Valid @RequestBody User user) {
+        log.debug("Регистрация пользователя " + user.getName());
         return userServiceStorage.createUser(user);
     }
 
     @PutMapping
     public User update(@Valid @RequestBody User user) {
-        /*checkUserById(user.getId());*/
+        log.debug("Обновление данных пользователя " + user.getName());
         return userServiceStorage.updateUser(user);
     }
 
     @GetMapping("/{id}")
     public User getUserById(@PathVariable long id){
-        /*checkUserById(id);*/
+        log.debug("Запрос пользователя с ID: " + id);
         return userServiceStorage.getUserById(id);
     }
 
     @PutMapping("/{id}/friends/{friendId}")
     public String putFriendByIdAndUserId(@PathVariable long id, @PathVariable long friendId){
-        /*checkUserById(id);
-        checkUserById(friendId);*/
+        log.debug("Запрос дружбы пользователя ID " + id + ", пользователю ID: " + friendId);
         return userServiceStorage.putFriendByIdAndUserId(id, friendId);
     }
 
     @DeleteMapping("/{id}/friends/{friendId}")
     public String deleteFriendByIdAndUserId(@PathVariable long id, @PathVariable long friendId){
-        /*checkUserById(id);
-        checkUserById(friendId);*/
+        log.debug("Удаление дружбы пользователя ID " + id + ", и пользователя ID: " + friendId);
         return userServiceStorage.deleteFriendByIdAndUserId(id, friendId);
     }
 
     @GetMapping("/{id}/friends")
     public List<User> findFriendsByUserId(@PathVariable long id){
-        /*checkUserById(id);*/
+        log.debug("Получение списка всех друзей пользователя ID " + id);
         return userServiceStorage.findFriendsByUserId(id);
     }
 
     @GetMapping("/{id}/friends/common/{otherId}")
     public List<User> findCommonFriendsByFriendIdAndUserId(@PathVariable long id, @PathVariable long otherId){
+        log.debug("Получение списка общих друзей пользователя ID " + id + ", и пользователя ID: " + otherId);
         return userServiceStorage.findCommonFriendsByFriendIdAndUserId(id, otherId);
     }
-
-    /*public boolean isExistById(long id) {
-        if ((userService.getId() < id) || (id <= 0)) {
-            return true;
-        } else {
-            return false;
-        }
-
-    }
-
-    public void checkUserById(long id) {
-        if (isExistById(id)) {
-            log.warn("Пользователя с таким ID ( {} )не зарегистрировано!", id);
-            throw new ObjectNotFoundException("Пользователя с таким ID (" + id
-                    + ") не зарегистрировано!");
-        }
-    }*/
 }

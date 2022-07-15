@@ -23,40 +23,43 @@ public class FilmController {
 
     @GetMapping
     public List<Film> findAll() {
+        log.debug("Выведен список всех фильмов");
         return filmServiceStorage.findAll();
     }
 
     @PostMapping
     public Film create(@Valid @RequestBody Film film) {
+        log.debug("Создание фильма " + film.getName());
         return filmServiceStorage.createFilm(film);
     }
 
     @PutMapping
     public Film update(@Valid @RequestBody Film film) {
-        /*checkFilmById(film.getId());*/
+        log.debug("Обновление фильма " + film.getName());
         return filmServiceStorage.updateFilm(film);
     }
 
     @GetMapping("/{id}")
     public Film getFilmById(@PathVariable long id) {
-        /*checkFilmById(id);*/
+        log.debug("Запрос фильма по ID: " + id);
         return filmServiceStorage.getFilmById(id);
     }
 
     @PutMapping("/{id}/like/{userId}")
     public String putLikeByFilmIdAndUserId(@PathVariable long id, @PathVariable long userId) {
-        /*checkFilmById(id);*/
+        log.debug("Присвоение лайка фильму ID " + id + ", от пользователя ID: " + userId);
         return filmServiceStorage.putLikeByFilmIdAndUserId(id, userId);
     }
 
     @DeleteMapping("/{id}/like/{userId}")
     public String deleteLikeByFilmIdAndUserId(@PathVariable long id, @PathVariable long userId) {
-        /*checkFilmById(id);*/
+        log.debug("Удаление лайка фильму ID " + id + ", от пользователя ID: " + userId);
         return filmServiceStorage.deleteLikeByFilmIdAndUserId(id, userId);
     }
 
     @GetMapping("/popular")
     public List<Film> getPopularFilms(@RequestParam(defaultValue = "10", required = false) final long count) {
+        log.debug("Получение самых популярных фильмов");
         return filmServiceStorage.getPopularFilms(count);
     }
 }

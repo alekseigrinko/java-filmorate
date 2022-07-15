@@ -39,7 +39,7 @@ public class FilmDbService implements FilmServiceStorage {
     @Override
     public String deleteLikeByFilmIdAndUserId(long id, long userId) {
         filmLikeDbStorage.deleteFilmLike(id, userId);
-        return "Лайк фильму ID: " + id + " пользователя ID: " + userId + " удален";
+        return "Лайк фильму ID: " + id + ", пользователя ID: " + userId + " удален";
     }
 
     @Override

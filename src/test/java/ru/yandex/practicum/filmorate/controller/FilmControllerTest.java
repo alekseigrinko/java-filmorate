@@ -1,11 +1,21 @@
 package ru.yandex.practicum.filmorate.controller;
 
+import lombok.RequiredArgsConstructor;
 import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
+import org.springframework.boot.test.context.SpringBootTest;
 import ru.yandex.practicum.filmorate.exeption.ObjectNotFoundException;
 import ru.yandex.practicum.filmorate.exeption.ValidationException;
 import ru.yandex.practicum.filmorate.model.Film;
+import ru.yandex.practicum.filmorate.service.FilmDbService;
+import ru.yandex.practicum.filmorate.service.FilmServiceStorage;
+import ru.yandex.practicum.filmorate.storage.film.FilmDbStorage;
+import ru.yandex.practicum.filmorate.storage.filmgenres.FilmGenreDbStorage;
+import ru.yandex.practicum.filmorate.storage.filmlike.FilmLikeDbStorage;
 
 import javax.validation.ConstraintViolation;
 import javax.validation.Validation;
@@ -17,25 +27,27 @@ import java.util.Set;
 
 import static org.junit.jupiter.api.Assertions.*;
 
+@SpringBootTest
+@AutoConfigureTestDatabase
+@RequiredArgsConstructor(onConstructor_ = @Autowired)
 class FilmControllerTest {
-/*
     private static Film film;
     private static FilmController filmController;
-    private FilmService filmService = new FilmService(new InMemoryFilmStorage());
+    private FilmServiceStorage filmServiceStorage;
 
 
-    @BeforeEach
+    @BeforeAll
     public void SetUp() {
         film = new Film("nisi eiusmod", "adipisicing", LocalDate.of(1967, 03, 25)
                 ,  100);
-        filmController = new FilmController(filmService);
+        filmController = new FilmController(filmServiceStorage);
     }
 
     @Test
     void addFilm() {
         Film testFilm = filmController.create(film);
         film.setId(testFilm.getId());
-        Assertions.assertTrue(filmService.getMapFilms().containsValue(film));
+        Assertions.assertEquals(filmController.getFilmById(film.getId()), film);
         Assertions.assertEquals(film, testFilm);
     }
 
@@ -46,9 +58,8 @@ class FilmControllerTest {
                 ,  100);
         film.setId(testFilm.getId());
         filmController.update(film);
-        Assertions.assertTrue(filmService.getMapFilms().containsValue(film));
-        Assertions.assertEquals(filmService.getMapFilms().get(film.getId()).getName()
-                ,"domsuie isin");
+        Assertions.assertEquals(filmController.getFilmById(film.getId()), film);
+
     }
 
     @Test
@@ -110,8 +121,8 @@ class FilmControllerTest {
     void findAll() {
         filmController.create(film);
         List<Film> testList = filmController.findAll();
-        Assertions.assertEquals(1, filmService.getMapFilms().size());
-        Assertions.assertEquals(testList.get(0), filmService.getMapFilms().get(film.getId()));
+        Assertions.assertEquals(1, filmController.findAll().size());
+        Assertions.assertEquals(testList.get(0), filmController.findAll().get(0));
     }
 
     @Test
@@ -133,13 +144,17 @@ class FilmControllerTest {
         filmController.putLikeByFilmIdAndUserId(film.getId(),1);
         filmController.putLikeByFilmIdAndUserId(film.getId(),2);
         filmController.putLikeByFilmIdAndUserId(film.getId(),3);
+/*
         Assertions.assertEquals(3, film.getLikes().size());
+*/
         filmController.putLikeByFilmIdAndUserId(testFilm.getId(),1);
         filmController.putLikeByFilmIdAndUserId(testFilm.getId(),2);
         filmController.putLikeByFilmIdAndUserId(testFilm2.getId(),1);
         List<Film> popularFilms = filmController.getPopularFilms(1);
         Assertions.assertEquals(film, popularFilms.get(0));
         filmController.deleteLikeByFilmIdAndUserId(testFilm2.getId(),1);
+/*
         Assertions.assertTrue(testFilm2.getLikes().isEmpty());
-    }*/
+*/
+    }
 }

@@ -1,16 +1,11 @@
 package ru.yandex.practicum.filmorate.service;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Service;
-import ru.yandex.practicum.filmorate.model.Friendship;
 import ru.yandex.practicum.filmorate.model.User;
 import ru.yandex.practicum.filmorate.storage.friendship.FriendshipDbStorage;
 import ru.yandex.practicum.filmorate.storage.user.UserDbStorage;
 
 import java.util.List;
-import java.util.TreeSet;
 import java.util.stream.Collectors;
 
 @Service("UserDbService")
@@ -18,10 +13,6 @@ public class UserDbService implements UserServiceStorage{
 
     private final UserDbStorage userDbStorage;
     private final FriendshipDbStorage friendshipDbStorage;
-
-    private final JdbcTemplate jdbcTemplate = new JdbcTemplate();
-
-    private static final Logger log = LoggerFactory.getLogger(UserDbService.class);
 
     public UserDbService(UserDbStorage userDbStorage, FriendshipDbStorage friendshipDbStorage) {
         this.userDbStorage = userDbStorage;
