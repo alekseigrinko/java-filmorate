@@ -14,9 +14,9 @@ import java.util.List;
 @Repository
 public class FilmLikeDbStorage implements FilmLikeStorage{
 
-    JdbcTemplate jdbcTemplate;
-    UserDbStorage userDbStorage;
-    FilmDbStorage filmDbStorage;
+    private final JdbcTemplate jdbcTemplate;
+    private final UserDbStorage userDbStorage;
+    private final FilmDbStorage filmDbStorage;
 
     public FilmLikeDbStorage(JdbcTemplate jdbcTemplate, UserDbStorage userDbStorage, FilmDbStorage filmDbStorage) {
         this.jdbcTemplate = jdbcTemplate;

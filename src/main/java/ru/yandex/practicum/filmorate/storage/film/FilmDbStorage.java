@@ -20,8 +20,8 @@ import java.util.stream.Collectors;
 @Repository("FilmDbStorage")
 public class FilmDbStorage implements FilmStorage {
 
-    GenreDbStorage genreDbStorage;
-    FilmGenreDbStorage filmGenreDbStorage;
+    private final GenreDbStorage genreDbStorage;
+    private final FilmGenreDbStorage filmGenreDbStorage;
     private final static Logger log = LoggerFactory.getLogger(FilmDbStorage.class);
     JdbcTemplate jdbcTemplate;
 
@@ -145,6 +145,10 @@ public class FilmDbStorage implements FilmStorage {
     }
 
     void checkFilm(Film film) {
+        if (film.getName().isBlank() || film.getName() == null) {
+            log.warn("Название фильма не может быть пустым");
+            throw new ValidationException("Название фильма не может быть пустым");
+        }
         if (film.getDescription().length() > 200) {
             log.warn("Размер описания фильма превышает 200 символов!");
             throw new ValidationException("Размер описания фильма превышает 200 символов!");

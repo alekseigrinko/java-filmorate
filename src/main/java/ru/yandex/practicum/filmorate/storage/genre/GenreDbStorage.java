@@ -16,7 +16,7 @@ import java.util.List;
 
 @Repository
 public class GenreDbStorage implements GenreStorage {
-    JdbcTemplate jdbcTemplate;
+    private final JdbcTemplate jdbcTemplate;
     private final static Logger log = LoggerFactory.getLogger(GenreDbStorage.class);
 
 

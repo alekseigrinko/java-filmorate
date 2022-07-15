@@ -13,7 +13,7 @@ import java.util.List;
 
 @Repository
 public class FilmGenreDbStorage implements FilmGenreStorage{
-    JdbcTemplate jdbcTemplate;
+   private final JdbcTemplate jdbcTemplate;
 
     public FilmGenreDbStorage(JdbcTemplate jdbcTemplate) {
         this.jdbcTemplate = jdbcTemplate;

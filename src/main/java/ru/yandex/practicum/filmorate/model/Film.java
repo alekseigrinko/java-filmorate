@@ -14,7 +14,6 @@ import java.util.List;
 public class Film {
 
     private long id;
-    @NotEmpty
     private String name;
     private String description;
     private LocalDate releaseDate;
