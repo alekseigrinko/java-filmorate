@@ -12,7 +12,6 @@ import ru.yandex.practicum.filmorate.model.Genre;
 import ru.yandex.practicum.filmorate.model.Mpa;
 import ru.yandex.practicum.filmorate.storage.film.FilmDbStorage;
 import ru.yandex.practicum.filmorate.storage.filmgenres.FilmGenreDbStorage;
-import ru.yandex.practicum.filmorate.storage.genre.GenreDbStorage;
 
 import java.time.LocalDate;
 import java.util.ArrayList;

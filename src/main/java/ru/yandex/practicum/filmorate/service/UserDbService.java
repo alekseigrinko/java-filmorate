@@ -19,7 +19,6 @@ public class UserDbService implements UserServiceStorage{
         this.friendshipDbStorage = friendshipDbStorage;
     }
 
-
     @Override
     public User getUserById(long id) {
         return userDbStorage.getUserById(id);
