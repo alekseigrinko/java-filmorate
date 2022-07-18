@@ -9,7 +9,8 @@
 3. Поддерживать взаимодействие пользователей.
 Вот ссылка на диаграмму БД 
 
-![](../../Documents/filmorateDiagramm.png)
+![filmorateDiagramm](https://user-images.githubusercontent.com/98738143/179350550-c4513cef-5649-4f5e-98ad-4d723d094351.png)
+
 Приложение написано на Java. Пример кода:
 ```java
 public class Main {
