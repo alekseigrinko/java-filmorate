@@ -9,10 +9,12 @@ import org.springframework.stereotype.Repository;
 import ru.yandex.practicum.filmorate.exeption.ObjectNotFoundException;
 import ru.yandex.practicum.filmorate.exeption.ValidationException;
 import ru.yandex.practicum.filmorate.model.User;
+import ru.yandex.practicum.filmorate.storage.friendship.FriendshipDbStorage;
 
 import java.sql.*;
 import java.time.LocalDate;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Repository("UserDbStorage")
 public class UserDbStorage implements UserStorage {
@@ -21,8 +23,11 @@ public class UserDbStorage implements UserStorage {
 
     private static final Logger log = LoggerFactory.getLogger(UserDbStorage.class);
 
-    public UserDbStorage(JdbcTemplate jdbcTemplate) {
+    private final FriendshipDbStorage friendshipDbStorage;
+
+    public UserDbStorage(JdbcTemplate jdbcTemplate, FriendshipDbStorage friendshipDbStorage) {
         this.jdbcTemplate = jdbcTemplate;
+        this.friendshipDbStorage = friendshipDbStorage;
     }
 
 
@@ -114,4 +119,41 @@ public class UserDbStorage implements UserStorage {
             throw new ObjectNotFoundException("Пользователя с ID " + id + " не найдено!");
         }
     }
+
+    @Override
+    public String putFriendByIdAndUserId(long id, long friendId) {
+        checkUserId(id);
+        checkUserId(friendId);
+        friendshipDbStorage.create(id, friendId);
+        return "Дружба пользователя " + id + " и пользователя " + friendId
+                + " зарегистрирована и направлена на подтверждение";
+    }
+
+    @Override
+    public String deleteFriendByIdAndUserId(long id, long friendId) {
+        checkUserId(id);
+        checkUserId(friendId);
+        friendshipDbStorage.deleteFriendshipByUserIdFriendId(id, friendId);
+        return "Дружба пользователя " + id + " и " + friendId + " удалена";
+    }
+
+    @Override
+    public List<User> findFriendsByUserId(long id){
+        checkUserId(id);
+        List<User> friends = friendshipDbStorage.getFriendByUserId(id).stream()
+                .map(this::getUserById)
+                .collect(Collectors.toList());
+        return friends;
+    }
+
+    @Override
+    public List<User> findCommonFriendsByFriendIdAndUserId(long id, long friendId) {
+        checkUserId(id);
+        checkUserId(friendId);
+        List<User> commonFriends = friendshipDbStorage.findCommonFriendsByFriendIdAndUserId(id, friendId).stream()
+                .map(this::getUserById)
+                .collect(Collectors.toList());
+        return commonFriends;
+    }
+
 }

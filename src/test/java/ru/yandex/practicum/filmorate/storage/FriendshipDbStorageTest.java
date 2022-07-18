@@ -3,22 +3,17 @@ package ru.yandex.practicum.filmorate.storage;
 import lombok.RequiredArgsConstructor;
 import org.junit.FixMethodOrder;
 import org.junit.jupiter.api.Assertions;
-import org.junit.jupiter.api.BeforeAll;
-import org.junit.jupiter.api.Order;
 import org.junit.jupiter.api.Test;
 import org.junit.runners.MethodSorters;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
 import org.springframework.boot.test.context.SpringBootTest;
-import ru.yandex.practicum.filmorate.model.Friendship;
 import ru.yandex.practicum.filmorate.model.User;
 import ru.yandex.practicum.filmorate.storage.friendship.FriendshipDbStorage;
 import ru.yandex.practicum.filmorate.storage.user.UserDbStorage;
 
 import java.time.LocalDate;
 import java.util.List;
-
-import static org.junit.jupiter.api.Assertions.*;
 
 @SpringBootTest
 @AutoConfigureTestDatabase
@@ -50,7 +45,7 @@ class FriendshipDbStorageTest {
 
     @Test
     void getFriendshipByUserId() {
-        List<Friendship> testList = friendshipDbStorage.getFriendshipByUserId(1);
+        List<Long> testList = friendshipDbStorage.getFriendByUserId(1);
         Assertions.assertEquals(2, testList.size());
     }
 
@@ -61,7 +56,7 @@ class FriendshipDbStorageTest {
                 , LocalDate.of(1946, 8, 20)));
         friendshipDbStorage.create(1,3);
         friendshipDbStorage.create(3,2);
-        List<Friendship> testList = friendshipDbStorage.findCommonFriendsByFriendIdAndUserId(1,3);
+        List<Long> testList = friendshipDbStorage.findCommonFriendsByFriendIdAndUserId(1,3);
         Assertions.assertEquals(1, testList.size());
     }
 }

@@ -46,7 +46,7 @@ class FilmLikeDbStorageTest {
     @Order(1)
     void findAll() {
         createLike();
-        List<FilmLike> testList = filmLikeDbStorage.findAll();
+        List<Long> testList = filmLikeDbStorage.findAll();
         Assertions.assertEquals(3, filmLikeDbStorage.findAll().size());
         Assertions.assertEquals(testList.get(0), filmLikeDbStorage.findAll().get(0));
     }
@@ -54,14 +54,14 @@ class FilmLikeDbStorageTest {
     @Test
     void create() {
         createLike();
-        Assertions.assertEquals(1, filmLikeDbStorage.findAll().get(0).getFilmLikeId());
+        Assertions.assertEquals(1, filmLikeDbStorage.findAll().get(0));
     }
 
     @Test
     void deleteFilmLike() {
         createLike();
         filmLikeDbStorage.deleteFilmLike(1,1);
-        List<FilmLike> testList = filmLikeDbStorage.findAll();
+        List<Long> testList = filmLikeDbStorage.findAll();
         Assertions.assertEquals(0, testList.size());
     }
 

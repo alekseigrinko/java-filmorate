@@ -14,4 +14,11 @@ public interface UserStorage {
 
     User getUserById (long id);
 
+    String putFriendByIdAndUserId(long id, long friendId);
+
+    String deleteFriendByIdAndUserId(long id, long friendId);
+
+    List<User> findFriendsByUserId(long id);
+
+    List<User> findCommonFriendsByFriendIdAndUserId(long id, long friendId);
 }

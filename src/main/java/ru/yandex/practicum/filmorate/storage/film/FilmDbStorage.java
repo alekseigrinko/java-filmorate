@@ -10,6 +10,7 @@ import ru.yandex.practicum.filmorate.exeption.ObjectNotFoundException;
 import ru.yandex.practicum.filmorate.exeption.ValidationException;
 import ru.yandex.practicum.filmorate.model.*;
 import ru.yandex.practicum.filmorate.storage.filmgenres.FilmGenreDbStorage;
+import ru.yandex.practicum.filmorate.storage.filmlike.FilmLikeDbStorage;
 import ru.yandex.practicum.filmorate.storage.genre.GenreDbStorage;
 
 import java.sql.*;
@@ -22,13 +23,16 @@ public class FilmDbStorage implements FilmStorage {
 
     private final GenreDbStorage genreDbStorage;
     private final FilmGenreDbStorage filmGenreDbStorage;
+    private final FilmLikeDbStorage filmLikeDbStorage;
     private final static Logger log = LoggerFactory.getLogger(FilmDbStorage.class);
     JdbcTemplate jdbcTemplate;
 
-    public FilmDbStorage(JdbcTemplate jdbcTemplate, GenreDbStorage genreDbStorage, FilmGenreDbStorage filmGenreDbStorage) {
+    public FilmDbStorage(JdbcTemplate jdbcTemplate, GenreDbStorage genreDbStorage, FilmGenreDbStorage filmGenreDbStorage
+    , FilmLikeDbStorage filmLikeDbStorage) {
         this.jdbcTemplate = jdbcTemplate;
         this.genreDbStorage = genreDbStorage;
         this.filmGenreDbStorage = filmGenreDbStorage;
+        this.filmLikeDbStorage = filmLikeDbStorage;
     }
 
     @Override
@@ -191,4 +195,32 @@ public class FilmDbStorage implements FilmStorage {
             film.setGenres(genresWithName);
         }
     }
+
+    @Override
+    public List<Film> getPopularFilms(long count) {
+        List<Long> likes = filmLikeDbStorage.findAll();
+        if (likes.size() != 0) {
+            List<Film> films = filmLikeDbStorage.getPopularFilms(count).stream()
+                    .map(this::getFilmById)
+                    .collect(Collectors.toList());
+            return films;
+        } else {
+            return findAll();
+        }
+    }
+
+    @Override
+    public String putLikeByFilmIdAndUserId(long id, long userId) {
+        checkFilmId(id);
+        filmLikeDbStorage.create(id, userId);
+        return "Поставлен лайк фильму ID: " + id + ", пользователем ID: " + userId;
+    }
+
+    @Override
+    public String deleteLikeByFilmIdAndUserId(long id, long userId) {
+        checkFilmId(id);
+        filmLikeDbStorage.deleteFilmLike(id, userId);
+        return "Лайк фильму ID: " + id + ", пользователя ID: " + userId + " удален";
+    }
+
 }
