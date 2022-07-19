@@ -11,6 +11,7 @@ import ru.yandex.practicum.filmorate.exeption.ValidationException;
 import ru.yandex.practicum.filmorate.model.*;
 import ru.yandex.practicum.filmorate.storage.filmlike.FilmLikeDbStorage;
 import ru.yandex.practicum.filmorate.storage.genre.GenreDbStorage;
+import ru.yandex.practicum.filmorate.storage.mpa.MpaDbStorage;
 
 import java.sql.*;
 import java.time.LocalDate;
@@ -22,13 +23,16 @@ public class FilmDbStorage implements FilmStorage {
 
     private final GenreDbStorage genreDbStorage;
     private final FilmLikeDbStorage filmLikeDbStorage;
+
+    private final MpaDbStorage mpaDbStorage;
     private final static Logger log = LoggerFactory.getLogger(FilmDbStorage.class);
     JdbcTemplate jdbcTemplate;
 
-    public FilmDbStorage(JdbcTemplate jdbcTemplate, GenreDbStorage genreDbStorage
+    public FilmDbStorage(JdbcTemplate jdbcTemplate, GenreDbStorage genreDbStorage, MpaDbStorage mpaDbStorage
     , FilmLikeDbStorage filmLikeDbStorage) {
         this.jdbcTemplate = jdbcTemplate;
         this.genreDbStorage = genreDbStorage;
+        this.mpaDbStorage = mpaDbStorage;
         this.filmLikeDbStorage = filmLikeDbStorage;
     }
 
@@ -60,35 +64,12 @@ public class FilmDbStorage implements FilmStorage {
             return stmt;
         }, keyHolder);
         film.setId(keyHolder.getKey().longValue());
-        film.setMpa(getMpaRating(film.getMpa().getId()));
+        film.setMpa(mpaDbStorage.getMpaRating(film.getMpa().getId()));
         updateFilmGenre(film);
         return film;
     }
 
-    @Override
-    public Mpa getMpaRating(long mpaRatingId) {
-        checkMpaId(mpaRatingId);
-        String sqlQuery = "SELECT * FROM MPA_RATINGS WHERE MPA_RATING_ID = ?";
-        final List<Mpa> mpaRatings = jdbcTemplate.query(sqlQuery, this::makeMpaRating, mpaRatingId);
-        if (mpaRatings.size() != 1) {
-            // TODO not found
-        }
-        return mpaRatings.get(0);
-    }
 
-    @Override
-    public List<Mpa> findAllMpa() {
-        final String sqlQuery = "SELECT * FROM MPA_RATINGS";
-        final List<Mpa> mpaRatings = jdbcTemplate.query(sqlQuery, this::makeMpaRating);
-        return mpaRatings;
-    }
-
-    public Mpa makeMpaRating(ResultSet rs, int rowNum) throws SQLException {
-        Mpa mpa = new Mpa();
-        mpa.setId(rs.getLong("MPA_RATING_ID"));
-        mpa.setName(rs.getString("NAME"));
-        return mpa;
-    }
 
     public Film makeFilm(ResultSet rs, int rowNum) throws SQLException {
         long id = rs.getLong("FILM_ID");
@@ -96,7 +77,8 @@ public class FilmDbStorage implements FilmStorage {
         String description = rs.getString("DESCRIPTION");
         LocalDate releaseDate = rs.getDate("RELEASE_DATE").toLocalDate();
         int duration = rs.getInt("DURATION");
-        return new Film(id, name, description, releaseDate, duration, getMpaRating(rs.getLong("MPA_RATING")));
+        return new Film(id, name, description, releaseDate, duration
+                , mpaDbStorage.getMpaRating(rs.getLong("MPA_RATING")));
     }
 
     @Override
@@ -170,14 +152,6 @@ public class FilmDbStorage implements FilmStorage {
         }
     }
 
-    private void checkMpaId(long id) {
-        String sqlQuery = "SELECT * FROM MPA_RATINGS WHERE MPA_RATING_ID = ?";
-        final List<Mpa> mpaRatings = jdbcTemplate.query(sqlQuery, this::makeMpaRating, id);
-        if (mpaRatings.size() != 1) {
-            log.warn("MPA-рейтинга с ID " + id + " не найдено!");
-            throw new ObjectNotFoundException("MPA-рейтинга с ID " + id + " не найдено!");
-        }
-    }
 
     private void updateFilmGenre(Film film) {
         if (film.getGenres().size() != 0) {

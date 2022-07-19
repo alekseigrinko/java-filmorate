@@ -12,6 +12,7 @@ import ru.yandex.practicum.filmorate.model.Film;
 import ru.yandex.practicum.filmorate.model.Genre;
 import ru.yandex.practicum.filmorate.model.Mpa;
 import ru.yandex.practicum.filmorate.storage.film.FilmDbStorage;
+import ru.yandex.practicum.filmorate.storage.mpa.MpaDbStorage;
 
 import java.time.LocalDate;
 import java.util.ArrayList;
@@ -27,6 +28,7 @@ class FilmDbStorageTest {
     Film film;
 
     private final FilmDbStorage filmDbStorage;
+    private final MpaDbStorage mpaDbStorage;
 
 
     public void createFilm() {
@@ -139,13 +141,13 @@ class FilmDbStorageTest {
 
     @Test
     void findAllMpa() {
-        List<Mpa> testList = filmDbStorage.findAllMpa();
-        Assertions.assertEquals(5, filmDbStorage.findAllMpa().size());
+        List<Mpa> testList = mpaDbStorage.findAllMpa();
+        Assertions.assertEquals(5, mpaDbStorage.findAllMpa().size());
     }
 
     @Test
     void getMpaById() {
-        Assertions.assertEquals("G", filmDbStorage.getMpaRating(1).getName());
+        Assertions.assertEquals("G", mpaDbStorage.getMpaRating(1).getName());
     }
 
 }

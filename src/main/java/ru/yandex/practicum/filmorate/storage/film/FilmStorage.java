@@ -17,10 +17,6 @@ public interface FilmStorage {
 
     Film getFilmById(long id);
 
-    Mpa getMpaRating(long mpaRatingId);
-
-    List<Mpa> findAllMpa();
-
     List<Film> getPopularFilms(long count);
 
     String putLikeByFilmIdAndUserId(long id, long userId);
