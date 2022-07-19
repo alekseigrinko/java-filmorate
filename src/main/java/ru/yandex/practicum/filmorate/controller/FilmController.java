@@ -5,7 +5,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.web.bind.annotation.*;
 import ru.yandex.practicum.filmorate.model.Film;
-import ru.yandex.practicum.filmorate.service.FilmServiceStorage;
+import ru.yandex.practicum.filmorate.service.FilmService;
 
 import javax.validation.Valid;
 import java.util.List;
@@ -14,10 +14,10 @@ import java.util.List;
 @RequestMapping("/films")
 public class FilmController {
 
-    private final FilmServiceStorage filmServiceStorage;
+    private final FilmService filmServiceStorage;
     private final static Logger log = LoggerFactory.getLogger(FilmController.class);
 
-    public FilmController(@Qualifier("FilmDbService") FilmServiceStorage filmServiceStorage) {
+    public FilmController(@Qualifier("FilmDbService") FilmService filmServiceStorage) {
         this.filmServiceStorage = filmServiceStorage;
     }
 
@@ -37,6 +37,12 @@ public class FilmController {
     public Film update(@Valid @RequestBody Film film) {
         log.debug("Обновление фильма " + film.getName());
         return filmServiceStorage.updateFilm(film);
+    }
+
+    @DeleteMapping("/{id}/")
+    public String deleteFilmById(@PathVariable long id) {
+        log.debug("Удаление фильма ID " + id);
+        return filmServiceStorage.deleteFilmById(id);
     }
 
     @GetMapping("/{id}")

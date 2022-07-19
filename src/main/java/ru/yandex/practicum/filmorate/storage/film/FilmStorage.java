@@ -13,6 +13,8 @@ public interface FilmStorage {
 
     Film update(Film film);
 
+    void deleteFilmById(long filmId);
+
     Film getFilmById(long id);
 
     Mpa getMpaRating(long mpaRatingId);

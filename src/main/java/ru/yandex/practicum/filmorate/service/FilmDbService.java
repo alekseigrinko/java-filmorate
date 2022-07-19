@@ -8,7 +8,7 @@ import ru.yandex.practicum.filmorate.storage.film.FilmDbStorage;
 import java.util.List;
 
 @Service("FilmDbService")
-public class FilmDbService implements FilmServiceStorage {
+public class FilmDbService implements FilmService {
 
     FilmDbStorage filmDbStorage;
     JdbcTemplate jdbcTemplate;
@@ -46,6 +46,12 @@ public class FilmDbService implements FilmServiceStorage {
     @Override
     public Film updateFilm(Film film) {
         return filmDbStorage.update(film);
+    }
+
+    @Override
+    public String deleteFilmById(long filmId) {
+        filmDbStorage.deleteFilmById(filmId);
+        return "Удаление фильма ID " + filmId;
     }
 
     @Override

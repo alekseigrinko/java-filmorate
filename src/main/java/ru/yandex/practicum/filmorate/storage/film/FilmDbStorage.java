@@ -68,16 +68,6 @@ public class FilmDbStorage implements FilmStorage {
         return film;
     }
 
-    private void createMpaRating(String nameRating) {
-        String sqlQuery = "INSERT INTO MPA_RATINGS (NAME) VALUES (?)";
-        KeyHolder keyHolder = new GeneratedKeyHolder();
-        jdbcTemplate.update(connection -> {
-            PreparedStatement stmt = connection.prepareStatement(sqlQuery, new String[]{"MPA_RATING_ID"});
-            stmt.setString(1, nameRating);
-            return stmt;
-        }, keyHolder);
-    }
-
     @Override
     public Mpa getMpaRating(long mpaRatingId) {
         checkMpaId(mpaRatingId);
@@ -130,6 +120,13 @@ public class FilmDbStorage implements FilmStorage {
         filmGenreDbStorage.deleteFilmGenreByFilmId(film.getId());
         updateFilmGenre(film);
         return film;
+    }
+
+    @Override
+    public void deleteFilmById(long filmId) {
+        checkFilmId(filmId);
+        String sqlQuery = "DELETE FROM FILMS WHERE FILM_ID = ?";
+        jdbcTemplate.update(sqlQuery, filmId);
     }
 
     @Override

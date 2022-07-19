@@ -4,7 +4,7 @@ import ru.yandex.practicum.filmorate.model.User;
 
 import java.util.List;
 
-public interface UserServiceStorage {
+public interface UserService {
 
     User getUserById(long id);
 
@@ -19,6 +19,8 @@ public interface UserServiceStorage {
     User createUser(User user);
 
     User updateUser(User user);
+
+    String deleteUserById(long userId);
 
     List<User> findAll();
 }

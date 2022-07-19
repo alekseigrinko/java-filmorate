@@ -4,7 +4,7 @@ import ru.yandex.practicum.filmorate.model.Film;
 
 import java.util.List;
 
-public interface FilmServiceStorage {
+public interface FilmService {
 
     Film getFilmById(long id);
 
@@ -17,6 +17,8 @@ public interface FilmServiceStorage {
     Film createFilm(Film film);
 
     Film updateFilm(Film film);
+
+    String deleteFilmById(long filmId);
 
     List<Film> findAll();
 

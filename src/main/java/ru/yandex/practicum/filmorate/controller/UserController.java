@@ -5,7 +5,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.web.bind.annotation.*;
 import ru.yandex.practicum.filmorate.model.User;
-import ru.yandex.practicum.filmorate.service.UserServiceStorage;
+import ru.yandex.practicum.filmorate.service.UserService;
 
 import javax.validation.Valid;
 import java.util.List;
@@ -14,11 +14,11 @@ import java.util.List;
 @RequestMapping("/users")
 public class UserController {
 
-    private final UserServiceStorage userServiceStorage;
+    private final UserService userServiceStorage;
     private final static Logger log = LoggerFactory.getLogger(UserController.class);
 
 
-    public UserController(@Qualifier("UserDbService") UserServiceStorage userServiceStorage) {
+    public UserController(@Qualifier("UserDbService") UserService userServiceStorage) {
         this.userServiceStorage = userServiceStorage;
     }
 
@@ -38,6 +38,12 @@ public class UserController {
     public User update(@Valid @RequestBody User user) {
         log.debug("Обновление данных пользователя " + user.getName());
         return userServiceStorage.updateUser(user);
+    }
+
+    @DeleteMapping("/{id}/")
+    public String deleteUserById(@PathVariable long id){
+        log.debug("Удаление пользователя ID " + id);
+        return userServiceStorage.deleteUserById(id);
     }
 
     @GetMapping("/{id}")

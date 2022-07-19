@@ -7,7 +7,7 @@ import ru.yandex.practicum.filmorate.storage.user.UserDbStorage;
 import java.util.List;
 
 @Service("UserDbService")
-public class UserDbService implements UserServiceStorage{
+public class UserDbService implements UserService {
 
     private final UserDbStorage userDbStorage;
 
@@ -49,6 +49,12 @@ public class UserDbService implements UserServiceStorage{
     @Override
     public User updateUser(User user) {
         return userDbStorage.update(user);
+    }
+
+    @Override
+    public String deleteUserById(long userId) {
+       userDbStorage.deleteUserById(userId);
+       return "Удаление пользователя ID: " + userId;
     }
 
     @Override
