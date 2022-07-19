@@ -1,12 +1,14 @@
 package ru.yandex.practicum.filmorate.storage.filmlike;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.jdbc.core.JdbcTemplate;
-import org.springframework.jdbc.support.GeneratedKeyHolder;
-import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Repository;
+import ru.yandex.practicum.filmorate.exeption.ObjectNotFoundException;
+import ru.yandex.practicum.filmorate.exeption.ValidationException;
+import ru.yandex.practicum.filmorate.storage.friendship.FriendshipDbStorage;
 import ru.yandex.practicum.filmorate.storage.user.UserDbStorage;
 
-import java.sql.*;
 import java.util.List;
 
 @Repository
@@ -14,6 +16,7 @@ public class FilmLikeDbStorage implements FilmLikeStorage{
 
     private final JdbcTemplate jdbcTemplate;
     private final UserDbStorage userDbStorage;
+    private static final Logger log = LoggerFactory.getLogger(FriendshipDbStorage.class);
 
     public FilmLikeDbStorage(JdbcTemplate jdbcTemplate, UserDbStorage userDbStorage) {
         this.jdbcTemplate = jdbcTemplate;
@@ -29,15 +32,11 @@ public class FilmLikeDbStorage implements FilmLikeStorage{
 
     @Override
     public void create(long filmId, long userId) {
-        userDbStorage.checkUserId(userId);
-        String sqlQuery = "INSERT INTO FILM_LIKES (FILM_ID, USER_ID) VALUES (?, ?)";
-        KeyHolder keyHolder = new GeneratedKeyHolder();
-        jdbcTemplate.update(connection -> {
-            PreparedStatement stmt = connection.prepareStatement(sqlQuery, new String[]{"FILM_LIKE_ID"});
-            stmt.setLong(1, filmId);
-            stmt.setLong(2, userId);
-            return stmt;
-        }, keyHolder);
+        if (checkLike(filmId, userId)) {
+            userDbStorage.checkUserId(userId);
+            String sqlQuery = "INSERT INTO FILM_LIKES (FILM_ID, USER_ID) VALUES (?, ?)";
+            jdbcTemplate.update(sqlQuery, filmId, userId);
+        }
     }
 
     @Override
@@ -65,6 +64,17 @@ public class FilmLikeDbStorage implements FilmLikeStorage{
             // TODO not found
         }
         return filmLikes;
+    }
+
+    public boolean checkLike(long filmId, long userId) {
+        String sqlQuery = "SELECT FILM_ID FROM FILM_LIKES WHERE FILM_ID = ? AND USER_ID = ?";
+        final List<Long> likes = jdbcTemplate.queryForList(sqlQuery, Long.class, filmId, userId);
+        if (likes.size() == 1) {
+            log.warn("Лайк уже зарегистрирован!");
+            /*throw new ValidationException("Лайк уже зарегистрирован!");*/
+            return false;
+        }
+        return true;
     }
 
 }

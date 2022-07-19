@@ -12,4 +12,8 @@ public interface GenreStorage {
     void deleteGenre(long genreId);
 
     Genre getGenreById(long genreId);
+
+    void addGenreByFilm(long filmId, long genreId);
+
+    void deleteGenreByFilmByFilmId(long filmId);
 }

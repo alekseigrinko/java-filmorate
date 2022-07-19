@@ -76,4 +76,23 @@ public class GenreDbStorage implements GenreStorage {
             throw new ObjectNotFoundException("Жанра с ID " + id + " не найдено!");
         }
     }
+
+    @Override
+    public void addGenreByFilm(long filmId, long genreId) {
+        String sqlQuery = "INSERT INTO FILM_GENRES (FILM_ID, GENRE_ID) VALUES (?, ?)";
+        jdbcTemplate.update(sqlQuery,filmId,genreId);
+    }
+
+    @Override
+    public void deleteGenreByFilmByFilmId(long filmId) {
+        String sqlQuery = "DELETE FROM FILM_GENRES WHERE FILM_ID = ?";
+        jdbcTemplate.update(sqlQuery, filmId);
+    }
+
+    public List<Long> getGenreByFilmId(long filmId) {
+        final String sqlQuery = "SELECT GENRE_ID FROM FILM_GENRES " +
+                "WHERE FILM_ID = ?";
+        List<Long> genres = jdbcTemplate.queryForList(sqlQuery, Long.class, filmId);
+        return genres;
+    }
 }

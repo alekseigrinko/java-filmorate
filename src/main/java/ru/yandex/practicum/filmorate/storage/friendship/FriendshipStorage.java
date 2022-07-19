@@ -3,11 +3,10 @@ package ru.yandex.practicum.filmorate.storage.friendship;
 import java.util.List;
 
 public interface FriendshipStorage {
+
     List<Long> findAll();
 
     void create(long userId, long friendId);
-
-    String updateFriendshipStatus(Long friendshipId);
 
     List<Long> getFriendByUserId (long id);
 

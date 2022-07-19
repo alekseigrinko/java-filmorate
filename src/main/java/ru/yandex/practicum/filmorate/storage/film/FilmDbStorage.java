@@ -9,7 +9,6 @@ import org.springframework.stereotype.Repository;
 import ru.yandex.practicum.filmorate.exeption.ObjectNotFoundException;
 import ru.yandex.practicum.filmorate.exeption.ValidationException;
 import ru.yandex.practicum.filmorate.model.*;
-import ru.yandex.practicum.filmorate.storage.filmgenres.FilmGenreDbStorage;
 import ru.yandex.practicum.filmorate.storage.filmlike.FilmLikeDbStorage;
 import ru.yandex.practicum.filmorate.storage.genre.GenreDbStorage;
 
@@ -22,16 +21,14 @@ import java.util.stream.Collectors;
 public class FilmDbStorage implements FilmStorage {
 
     private final GenreDbStorage genreDbStorage;
-    private final FilmGenreDbStorage filmGenreDbStorage;
     private final FilmLikeDbStorage filmLikeDbStorage;
     private final static Logger log = LoggerFactory.getLogger(FilmDbStorage.class);
     JdbcTemplate jdbcTemplate;
 
-    public FilmDbStorage(JdbcTemplate jdbcTemplate, GenreDbStorage genreDbStorage, FilmGenreDbStorage filmGenreDbStorage
+    public FilmDbStorage(JdbcTemplate jdbcTemplate, GenreDbStorage genreDbStorage
     , FilmLikeDbStorage filmLikeDbStorage) {
         this.jdbcTemplate = jdbcTemplate;
         this.genreDbStorage = genreDbStorage;
-        this.filmGenreDbStorage = filmGenreDbStorage;
         this.filmLikeDbStorage = filmLikeDbStorage;
     }
 
@@ -117,7 +114,7 @@ public class FilmDbStorage implements FilmStorage {
                 , film.getMpa().getId()
                 , film.getId()
         );
-        filmGenreDbStorage.deleteFilmGenreByFilmId(film.getId());
+        genreDbStorage.deleteGenreByFilmByFilmId(film.getId());
         updateFilmGenre(film);
         return film;
     }
@@ -138,7 +135,7 @@ public class FilmDbStorage implements FilmStorage {
             // TODO not found
         }
         Film film = films.get(0);
-        List<Genre> genresWithName = filmGenreDbStorage.getGenreByFilmId(film.getId()).stream()
+        List<Genre> genresWithName = genreDbStorage.getGenreByFilmId(film.getId()).stream()
                 .map(genreDbStorage::getGenreById)
                 .collect(Collectors.toList());
         film.setGenres(genresWithName);
@@ -184,7 +181,7 @@ public class FilmDbStorage implements FilmStorage {
 
     private void updateFilmGenre(Film film) {
         if (film.getGenres().size() != 0) {
-            film.getGenres().stream().distinct().forEach(genre -> filmGenreDbStorage.create(film.getId(), genre.getId()));
+            film.getGenres().stream().distinct().forEach(genre -> genreDbStorage.addGenreByFilm(film.getId(), genre.getId()));
             List<Genre> genresWithName = film.getGenres().stream()
                     .distinct()
                     .map(genre -> genreDbStorage.getGenreById(genre.getId()))

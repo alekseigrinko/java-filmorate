@@ -133,7 +133,7 @@ class FilmDbStorageTest {
     void findAllFilms() {
         createFilm();
         List<Film> testList = filmDbStorage.findAll();
-        Assertions.assertEquals(9, filmDbStorage.findAll().size());
+        Assertions.assertEquals(8, filmDbStorage.findAll().size());
         Assertions.assertEquals(testList.get(0), filmDbStorage.findAll().get(0));
     }
 

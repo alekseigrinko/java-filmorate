@@ -47,7 +47,7 @@ class FilmLikeDbStorageTest {
     void findAll() {
         createLike();
         List<Long> testList = filmLikeDbStorage.findAll();
-        Assertions.assertEquals(3, filmLikeDbStorage.findAll().size());
+        Assertions.assertEquals(1, filmLikeDbStorage.findAll().size());
         Assertions.assertEquals(testList.get(0), filmLikeDbStorage.findAll().get(0));
     }
 
