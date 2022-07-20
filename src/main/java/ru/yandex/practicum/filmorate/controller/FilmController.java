@@ -14,58 +14,58 @@ import java.util.List;
 @RequestMapping("/films")
 public class FilmController {
 
-    private final FilmService filmServiceStorage;
+    private final FilmService filmService;
     private final static Logger log = LoggerFactory.getLogger(FilmController.class);
 
-    public FilmController(@Qualifier("FilmDbService") FilmService filmServiceStorage) {
-        this.filmServiceStorage = filmServiceStorage;
+    public FilmController(FilmService filmService) {
+        this.filmService = filmService;
     }
 
     @GetMapping
     public List<Film> findAll() {
         log.debug("Выведен список всех фильмов");
-        return filmServiceStorage.findAll();
+        return filmService.findAll();
     }
 
     @PostMapping
     public Film create(@Valid @RequestBody Film film) {
         log.debug("Создание фильма " + film.getName());
-        return filmServiceStorage.createFilm(film);
+        return filmService.createFilm(film);
     }
 
     @PutMapping
     public Film update(@Valid @RequestBody Film film) {
         log.debug("Обновление фильма " + film.getName());
-        return filmServiceStorage.updateFilm(film);
+        return filmService.updateFilm(film);
     }
 
     @DeleteMapping("/{id}/")
     public String deleteFilmById(@PathVariable long id) {
         log.debug("Удаление фильма ID " + id);
-        return filmServiceStorage.deleteFilmById(id);
+        return filmService.deleteFilmById(id);
     }
 
     @GetMapping("/{id}")
     public Film getFilmById(@PathVariable long id) {
         log.debug("Запрос фильма по ID: " + id);
-        return filmServiceStorage.getFilmById(id);
+        return filmService.getFilmById(id);
     }
 
     @PutMapping("/{id}/like/{userId}")
     public String putLikeByFilmIdAndUserId(@PathVariable long id, @PathVariable long userId) {
         log.debug("Присвоение лайка фильму ID " + id + ", от пользователя ID: " + userId);
-        return filmServiceStorage.putLikeByFilmIdAndUserId(id, userId);
+        return filmService.putLikeByFilmIdAndUserId(id, userId);
     }
 
     @DeleteMapping("/{id}/like/{userId}")
     public String deleteLikeByFilmIdAndUserId(@PathVariable long id, @PathVariable long userId) {
         log.debug("Удаление лайка фильму ID " + id + ", от пользователя ID: " + userId);
-        return filmServiceStorage.deleteLikeByFilmIdAndUserId(id, userId);
+        return filmService.deleteLikeByFilmIdAndUserId(id, userId);
     }
 
     @GetMapping("/popular")
     public List<Film> getPopularFilms(@RequestParam(defaultValue = "10", required = false) final long count) {
         log.debug("Получение самых популярных фильмов");
-        return filmServiceStorage.getPopularFilms(count);
+        return filmService.getPopularFilms(count);
     }
 }
